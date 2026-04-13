@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PædagoPlanen — 8-ugers pædagogisk planlægning</title>
+  <link rel="icon" href="Asset 3.svg" type="image/svg+xml">
+  <style>
+    /* ============================================================
+       DESIGN TOKENS
+       ============================================================ */
+    :root {
+      --green-dark:   #104f25;
+      --orange:       #f07f3c;
+      --green-light:  #c8e1bf;
+      --white:        #ffffff;
+      --surface:      #f0f7ec;
+      --text-dark:    #1a2e1f;
+      --text-mid:     #3d5a44;
+      --text-soft:    #6b8f72;
+      --border:       #a8c9a0;
+      --border-light: #d4e8cd;
+      --orange-hover: #d96b28;
+      --orange-soft:  #fde9d8;
+      --shadow:       0 2px 8px rgba(16,79,37,.10);
+      --shadow-lg:    0 6px 24px rgba(16,79,37,.15);
+      --r:            12px;
+      --r-sm:         8px;
+      --ease:         .2s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--green-light); color: var(--text-dark); line-height: 1.6; }
+
+    /* ============================================================
+       WELCOME SCREEN
+       ============================================================ */
+    .welcome {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(140deg, var(--green-dark) 0%, #186330 55%, #2e8b57 100%);
+      padding: 2rem;
+      animation: fadeIn .5s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .welcome-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 3rem;
+      max-width: 520px; width: 100%;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+
+    .welcome-logo {
+      width: 76px; height: 76px;
+      margin: 0 auto 1.5rem;
+      border-radius: 14px;
+      display: block;
+    }
+    .welcome-logo-fallback {
+      width: 76px; height: 76px;
+      margin: 0 auto 1.5rem;
+      display: none; /* shown via JS if img fails */
+    }
+
+    .welcome-card h1 { color: var(--green-dark); font-size: 1.9rem; font-weight: 800; margin-bottom: .35rem; }
+    .welcome-card .tagline { color: var(--text-mid); font-size: .95rem; margin-bottom: 2rem; }
+
+    .welcome-desc {
+      background: var(--surface);
+      border-left: 3px solid var(--orange);
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      padding: 1.1rem 1.25rem;
+      text-align: left;
+      font-size: .9rem;
+      color: var(--text-mid);
+      margin-bottom: 2rem;
+      line-height: 1.7;
+    }
+    .welcome-desc strong { color: var(--green-dark); }
+
+    .btn-cta {
+      background: var(--orange);
+      color: var(--white);
+      border: none;
+      padding: .9rem 2.2rem;
+      border-radius: 50px;
+      font-size: 1rem; font-weight: 700;
+      cursor: pointer;
+      transition: background var(--ease), transform var(--ease);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-cta:hover { background: var(--orange-hover); transform: translateY(-1px); }
+
+    .btn-ghost-sm {
+      background: none; border: none;
+      color: var(--text-soft);
+      font-size: .85rem; cursor: pointer;
+      margin-top: 1rem;
+      padding: .4rem 1rem;
+      border-radius: 50px;
+      transition: background var(--ease);
+      display: inline-flex; align-items: center; gap: .4rem;
+    }
+    .btn-ghost-sm:hover { background: var(--surface); }
+
+    /* ============================================================
+       LAYOUT
+       ============================================================ */
+    .app { display: flex; min-height: 100vh; }
+    .hidden { display: none !important; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 256px;
+      background: var(--green-dark);
+      color: var(--white);
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; bottom: 0;
+      z-index: 200;
+      overflow-y: auto;
+    }
+
+    .sb-head {
+      padding: 1.4rem 1.25rem 1.2rem;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      display: flex; align-items: center; gap: .75rem;
+    }
+    .sb-logo { width: 34px; height: 34px; border-radius: 6px; flex-shrink: 0; }
+    .sb-brand { font-size: .9rem; font-weight: 700; line-height: 1.25; }
+    .sb-brand span { display: block; font-size: .72rem; opacity: .6; font-weight: 400; margin-top: .1rem; }
+
+    .sb-nav { padding: 1.25rem .9rem; flex: 1; }
+    .sb-nav-heading { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+      opacity: .45; margin-bottom: .6rem; padding: 0 .4rem; }
+
+    .nav-item {
+      display: flex; align-items: center; gap: .7rem;
+      padding: .7rem .75rem;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--ease);
+      margin-bottom: .2rem;
+      color: rgba(255,255,255,.7);
+      font-size: .875rem;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.1); color: var(--white); }
+    .nav-item.active { background: rgba(240,127,60,.25); color: var(--white); font-weight: 600; }
+    .nav-item.done .nav-dot { background: var(--green-light); color: var(--green-dark); }
+    .nav-item.active .nav-dot { background: var(--orange); color: var(--white); }
+
+    .nav-dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .68rem; font-weight: 700; flex-shrink: 0;
+    }
+
+    .sb-footer {
+      padding: 1.25rem;
+      border-top: 1px solid rgba(255,255,255,.1);
+    }
+    .prog-label { font-size: .72rem; opacity: .6; margin-bottom: .45rem; }
+    .prog-track { background: rgba(255,255,255,.15); border-radius: 50px; height: 5px; overflow: hidden; }
+    .prog-fill { background: var(--orange); height: 100%; border-radius: 50px; transition: width .5s ease; }
+
+    /* Main content */
+    .main { margin-left: 256px; display: flex; flex-direction: column; min-height: 100vh; }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    }
+    .topbar-title { color: var(--green-dark); font-size: 1.15rem; font-weight: 700; }
+    .topbar-actions { display: flex; gap: .75rem; align-items: center; }
+
+    .btn-save {
+      background: var(--surface); color: var(--text-mid);
+      border: 1px solid var(--border);
+      padding: .45rem 1rem; border-radius: 50px;
+      font-size: .82rem; cursor: pointer;
+      transition: all var(--ease);
+      display: flex; align-items: center; gap: .35rem;
+    }
+    .btn-save:hover { background: var(--border-light); }
+    .save-status { font-size: .78rem; color: var(--text-soft); }
+
+    /* Step content */
+    .step-wrap { padding: 2rem; max-width: 840px; flex: 1; }
+
+    .step-head { margin-bottom: 2rem; }
+    .step-head h1 { color: var(--green-dark); font-size: 1.55rem; font-weight: 800; margin-bottom: .4rem; }
+    .step-head p { color: var(--text-mid); font-size: .93rem; max-width: 620px; }
+
+    /* Cards */
+    .card {
+      background: var(--white);
+      border-radius: var(--r);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: .95rem; font-weight: 700;
+      color: var(--green-dark);
+      margin-bottom: 1.1rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .ci { /* card icon */
+      width: 26px; height: 26px;
+      background: var(--green-light);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .85rem; flex-shrink: 0;
+    }
+
+    /* Forms */
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .fg { margin-bottom: 1.1rem; }
+    .fg:last-child { margin-bottom: 0; }
+
+    label { display: block; font-size: .83rem; font-weight: 600; color: var(--text-mid); margin-bottom: .35rem; }
+    .lh { font-weight: 400; color: var(--text-soft); }
+
+    input[type=text], input[type=date], textarea, select {
+      width: 100%; padding: .7rem .85rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: .92rem; font-family: inherit;
+      color: var(--text-dark); background: var(--white);
+      transition: border-color var(--ease), box-shadow var(--ease);
+      resize: vertical;
+    }
+    input[type=text]:focus, input[type=date]:focus, textarea:focus, select:focus {
+      outline: none; border-color: var(--orange);
+      box-shadow: 0 0 0 3px rgba(240,127,60,.15);
+    }
+    textarea { min-height: 90px; }
+
+    /* Theme checkboxes */
+    .theme-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; }
+
+    .theme-cb {
+      display: flex; align-items: flex-start; gap: .7rem;
+      padding: .8rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: all var(--ease);
+      background: var(--white);
+    }
+    .theme-cb:hover { border-color: var(--orange); background: var(--orange-soft); }
+    .theme-cb.on { border-color: var(--orange); background: var(--orange-soft); }
+    .theme-cb input { margin-top: .2rem; accent-color: var(--orange); flex-shrink: 0; }
+    .theme-cb-lbl { font-size: .83rem; font-weight: 600; color: var(--text-dark); }
+    .theme-cb-sub { font-size: .73rem; color: var(--text-soft); font-weight: 400; }
+
+    /* Coverage badges */
+    .badge-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .75rem; }
+    .badge {
+      padding: .28rem .75rem; border-radius: 50px;
+      font-size: .73rem; font-weight: 600;
+      background: var(--border-light); color: var(--text-soft);
+    }
+    .badge.on { background: var(--green-light); color: var(--green-dark); }
+
+    /* Alerts */
+    .alert { padding: .85rem 1.1rem; border-radius: var(--r-sm); font-size: .85rem; margin-top: 1rem; }
+    .a-info  { background: #e3f2fd; color: #1565c0; border-left: 3px solid #1976d2; }
+    .a-warn  { background: var(--orange-soft); color: #7c3500; border-left: 3px solid var(--orange); }
+    .a-ok    { background: #e8f5e9; color: #1b5e20; border-left: 3px solid #43a047; }
+
+    /* Week tabs */
+    .week-tabs { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+
+    .wtab {
+      padding: .45rem 1rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--white);
+      cursor: pointer;
+      font-size: .83rem; font-weight: 600;
+      color: var(--text-mid);
+      transition: all var(--ease);
+      position: relative;
+    }
+    .wtab:hover { border-color: var(--orange); color: var(--orange); }
+    .wtab.active { background: var(--green-dark); border-color: var(--green-dark); color: var(--white); }
+    .wtab.filled::after {
+      content: ''; position: absolute; top: -3px; right: -3px;
+      width: 8px; height: 8px;
+      background: var(--orange); border-radius: 50%; border: 2px solid var(--white);
+    }
+
+    /* Role cards */
+    .roles-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .9rem; }
+    .role-card { border: 1.5px solid var(--border); border-radius: var(--r-sm); padding: .9rem; background: var(--surface); }
+    .role-name { font-weight: 700; color: var(--green-dark); font-size: .85rem; margin-bottom: .2rem; }
+    .role-hint { font-size: .75rem; color: var(--text-soft); margin-bottom: .75rem; line-height: 1.4; }
+
+    /* Relational modes */
+    .rel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+    .rel-opt {
+      border: 2px solid var(--border); border-radius: var(--r-sm);
+      padding: 1rem; cursor: pointer; transition: all var(--ease); background: var(--white);
+    }
+    .rel-opt:hover { border-color: var(--orange); }
+    .rel-opt.on { border-color: var(--orange); background: var(--orange-soft); }
+    .rel-opt h4 { color: var(--green-dark); font-size: .88rem; margin-bottom: .25rem; }
+    .rel-opt p { font-size: .78rem; color: var(--text-mid); line-height: 1.5; }
+
+    /* Inspection cards */
+    .insp-card {
+      border-left: 3px solid var(--orange);
+      background: var(--orange-soft);
+      padding: 1rem 1.2rem;
+      border-radius: 0 var(--r-sm) var(--r-sm) 0;
+      margin-bottom: 1rem;
+    }
+    .insp-card:last-child { margin-bottom: 0; }
+    .insp-card h4 { color: var(--green-dark); font-size: .85rem; font-weight: 700; margin-bottom: .2rem; }
+    .insp-card > p { font-size: .78rem; color: var(--text-mid); margin-bottom: .55rem; }
+
+    /* Bottom nav */
+    .bottom-nav {
+      padding: 1.25rem 2rem;
+      background: var(--white);
+      border-top: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; bottom: 0; z-index: 50;
+    }
+    .nav-hint { font-size: .78rem; color: var(--text-soft); }
+
+    .btn-primary {
+      background: var(--orange); color: var(--white);
+      border: none; padding: .75rem 1.75rem;
+      border-radius: 50px; font-size: .92rem; font-weight: 700;
+      cursor: pointer; transition: all var(--ease);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-primary:hover { background: var(--orange-hover); transform: translateY(-1px); }
+
+    .btn-sec {
+      background: transparent; color: var(--text-mid);
+      border: 1.5px solid var(--border);
+      padding: .7rem 1.5rem; border-radius: 50px;
+      font-size: .9rem; font-weight: 600; cursor: pointer;
+      transition: all var(--ease);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-sec:hover { background: var(--surface); }
+
+    /* Overview table */
+    .ov-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .ov-table th { background: var(--green-dark); color: var(--white); padding: .7rem 1rem; text-align: left; }
+    .ov-table th:first-child { border-radius: var(--r-sm) 0 0 0; }
+    .ov-table th:last-child { border-radius: 0 var(--r-sm) 0 0; }
+    .ov-table td { padding: .7rem 1rem; border-bottom: 1px solid var(--border-light); vertical-align: top; }
+    .ov-table tr:nth-child(even) td { background: var(--surface); }
+
+    /* Export card */
+    .export-card {
+      background: var(--green-dark); color: var(--white);
+      border-radius: var(--r); padding: 2rem;
+      text-align: center; margin-bottom: 1.25rem;
+    }
+    .export-card h3 { font-size: 1.15rem; margin-bottom: .75rem; }
+    .export-card p { opacity: .75; font-size: .88rem; margin-bottom: 1.5rem; max-width: 460px; margin-left: auto; margin-right: auto; }
+    .export-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .btn-export {
+      background: var(--orange); color: var(--white);
+      border: none; padding: .8rem 1.75rem; border-radius: 50px;
+      font-size: .92rem; font-weight: 700; cursor: pointer;
+      transition: all var(--ease);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-export:hover { background: var(--orange-hover); }
+    .btn-export-sec {
+      background: rgba(255,255,255,.12); color: var(--white);
+      border: 1.5px solid rgba(255,255,255,.3);
+      padding: .8rem 1.75rem; border-radius: 50px;
+      font-size: .92rem; font-weight: 600; cursor: pointer;
+      transition: all var(--ease);
+      display: inline-flex; align-items: center; gap: .5rem;
+    }
+    .btn-export-sec:hover { background: rgba(255,255,255,.2); }
+
+    /* ============================================================
+       PRINT STYLES
+       ============================================================ */
+    @media print {
+      body * { visibility: hidden; }
+      #print-doc, #print-doc * { visibility: visible; }
+      #print-doc {
+        position: absolute; top: 0; left: 0; width: 100%;
+        display: block !important;
+      }
+    }
+    #print-doc { display: none; }
+
+    .pd { padding: 2cm; font-family: Georgia, 'Times New Roman', serif; color: #1a2e1f; }
+    .pd-head {
+      display: flex; align-items: flex-start; gap: 1.2rem;
+      margin-bottom: 2rem; padding-bottom: 1.2rem;
+      border-bottom: 3px solid #104f25;
+    }
+    .pd-head img { width: 52px; height: 52px; border-radius: 8px; }
+    .pd-head h1 { font-size: 1.4rem; color: #104f25; margin: 0 0 .3rem; }
+    .pd-head .meta { font-size: .78rem; color: #6b8f72; }
+    .pd-section { margin-bottom: 2rem; }
+    .pd-section h2 { color: #104f25; font-size: 1.05rem; border-bottom: 2px solid #c8e1bf; padding-bottom: .4rem; margin-bottom: 1rem; }
+    .pd-section h3 { color: #3d5a44; font-size: .95rem; margin: 1rem 0 .35rem; }
+    .pd-section p { font-size: .88rem; line-height: 1.6; }
+    .pd-week { border: 1px solid #a8c9a0; border-radius: 6px; margin-bottom: 1rem; overflow: hidden; page-break-inside: avoid; }
+    .pd-week-head { background: #104f25; color: white; padding: .5rem 1rem; font-weight: 700; font-size: .88rem; }
+    .pd-week-body { padding: .85rem 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
+    .pd-field label { font-size: .7rem; font-weight: 700; color: #6b8f72; text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: .15rem; }
+    .pd-field p { font-size: .82rem; line-height: 1.5; }
+    .pd-full { grid-column: 1 / -1; }
+    .pd-footer { margin-top: 2rem; padding-top: .75rem; border-top: 1px solid #c8e1bf; font-size: .72rem; color: #6b8f72; text-align: center; }
+
+    /* ============================================================
+       RESPONSIVE
+       ============================================================ */
+    @media (max-width: 820px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .row2, .roles-grid, .rel-grid, .theme-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     WELCOME SCREEN
+     ============================================================ -->
+<div id="welcome-screen" class="welcome">
+  <div class="welcome-card">
+    <img src="Asset 3.svg" alt="PædagoPlanen logo" class="welcome-logo"
+         onerror="this.style.display='none'; document.getElementById('logo-fb').style.display='block'">
+    <svg id="logo-fb" class="welcome-logo-fallback" viewBox="0 0 76 76">
+      <rect width="76" height="76" rx="13" fill="#104f25"/>
+      <polygon points="38,10 66,62 10,62" fill="#f07f3c"/>
+      <polygon points="38,26 28,50 48,50" fill="white" opacity=".9"/>
+      <circle cx="38" cy="40" r="4" fill="white"/>
+    </svg>
+    <h1>PædagoPlanen</h1>
+    <p class="tagline">8-ugers pædagogisk planlægningsværktøj for dagtilbud</p>
+    <div class="welcome-desc">
+      <strong>To pædagoger. Én struktureret plan.</strong><br>
+      Guider jer trin for trin through alle seks læreplanstemaer, tilsynspunkter og konkrete voksenroller — fra intention til dokumentation.
+    </div>
+    <button class="btn-cta" onclick="startApp(false)">Start ny plan &rarr;</button>
+    <br>
+    <button class="btn-ghost-sm" id="btn-load" style="display:none" onclick="startApp(true)">
+      &#128196; Fortsæt gemt plan
+    </button>
+    <br>
+    <label class="btn-ghost-sm" style="cursor:pointer" title="Importer JSON-fil">
+      &#128228; Importer plan (JSON)
+      <input type="file" accept=".json" id="import-file" style="display:none" onchange="importJSON(event)">
+    </label>
+  </div>
+</div>
+
+<!-- ============================================================
+     MAIN APP
+     ============================================================ -->
+<div id="app" class="app hidden">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sb-head">
+      <img src="Asset 3.svg" alt="Logo" class="sb-logo" onerror="this.style.display='none'">
+      <div class="sb-brand">PædagoPlanen<span>8-ugers plan</span></div>
+    </div>
+    <nav class="sb-nav">
+      <div class="sb-nav-heading">Trin</div>
+      <div id="sb-steps"></div>
+    </nav>
+    <div class="sb-footer">
+      <div class="prog-label" id="prog-lbl">0 % udfyldt</div>
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title" id="topbar-title">Opsætning</span>
+      <div class="topbar-actions">
+        <span class="save-status" id="save-status">Ikke gemt</span>
+        <button class="btn-save" onclick="savePlan()">&#128190; Gem</button>
+      </div>
+    </div>
+    <div class="step-wrap" id="step-content"></div>
+    <div class="bottom-nav">
+      <button class="btn-sec" id="btn-prev" onclick="prevStep()" style="display:none">&larr; Tilbage</button>
+      <span class="nav-hint" id="nav-hint"></span>
+      <button class="btn-primary" id="btn-next" onclick="nextStep()">Næste &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- Print document (hidden; shown via print CSS) -->
+<div id="print-doc"></div>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ============================================================
+   DATA MODEL
+   ============================================================ */
+const THEMES = [
+  { id:'apu', label:'Alsidig personlig udvikling', abbr:'APU', e:'🌱' },
+  { id:'su',  label:'Social udvikling',            abbr:'SU',  e:'🤝' },
+  { id:'kos', label:'Kommunikation og sprog',      abbr:'KOS', e:'💬' },
+  { id:'ksb', label:'Krop, sanser og bevægelse',   abbr:'KSB', e:'🏃' },
+  { id:'nus', label:'Natur, udeliv og science',    abbr:'NUS', e:'🌿' },
+  { id:'kaf', label:'Kultur, æstetik og fællesskab', abbr:'KÆF', e:'🎨' }
+];
+
+const STEPS = [
+  { id:'setup',  title:'Opsætning',                icon:'⚙️' },
+  { id:'theme',  title:'Tema & formål',             icon:'🎯' },
+  { id:'weeks',  title:'Ugeplan',                   icon:'📅' },
+  { id:'eval',   title:'Dokumentation & evaluering',icon:'📊' },
+  { id:'export', title:'Oversigt & eksport',        icon:'📄' }
+];
+
+function emptyWeek(n) {
+  return {
+    number: n,
+    theme: '', activities: '',
+    ankeret: '', ankeretRole: '',
+    legevogteren: '', legevogterenRole: '',
+    igangsaetteren: '', igangsaetterenRole: '',
+    relMode: '', relNotes: '',
+    lang: '', framing: '', transitions: '',
+    doc: '',
+    themes: []
+  };
+}
+
+let S = {
+  meta: { inst:'', group:'', edu1:'', edu2:'', period:'', age:'3–5 år' },
+  plan: { title:'', purpose:'', themes:[], langGen:'', framingGen:'', transGen:'' },
+  weeks: Array.from({length:8}, (_,i) => emptyWeek(i+1)),
+  eval: { methods:'', criteria:'', responsible:'', date:'', notes:'' }
+};
+
+let step = 0;
+let week = 0;
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('pplan')) {
+    document.getElementById('btn-load').style.display = 'inline-flex';
+  }
+});
+
+function startApp(load) {
+  if (load) {
+    try {
+      const d = JSON.parse(localStorage.getItem('pplan'));
+      if (d) mergeState(d);
+    } catch(e) {}
+  }
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  render();
+}
+
+function mergeState(d) {
+  S.meta = { ...S.meta, ...(d.meta||{}) };
+  S.plan = { ...S.plan, ...(d.plan||{}) };
+  S.eval = { ...S.eval, ...(d.eval||{}) };
+  if (d.weeks && Array.isArray(d.weeks)) {
+    S.weeks = Array.from({length:8}, (_,i) => ({ ...emptyWeek(i+1), ...(d.weeks[i]||{}) }));
+  }
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function prevStep() {
+  flushCurrentStep();
+  if (step > 0) { step--; week = 0; render(); scrollTo(0,0); }
+}
+function nextStep() {
+  flushCurrentStep();
+  if (step < STEPS.length-1) { step++; week = 0; render(); scrollTo(0,0); }
+}
+function gotoStep(i) {
+  flushCurrentStep();
+  step = i; week = 0; render(); scrollTo(0,0);
+}
+
+function flushCurrentStep() {
+  // Flush text fields for the active step
+  readFormInto();
+  if (step === 2) readWeekForm(week);
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function render() {
+  renderNav();
+  const el = document.getElementById('step-content');
+  switch(step) {
+    case 0: el.innerHTML = tplSetup(); break;
+    case 1: el.innerHTML = tplTheme(); break;
+    case 2: el.innerHTML = tplWeeks(); renderWeekContent(week); break;
+    case 3: el.innerHTML = tplEval(); break;
+    case 4: el.innerHTML = tplExport(); break;
+  }
+  bindMainForm();
+  if (step === 2) bindWeekForm(week);
+}
+
+function renderNav() {
+  const nav = document.getElementById('sb-steps');
+  nav.innerHTML = '';
+  STEPS.forEach((s,i) => {
+    const done = isComplete(i);
+    const active = i === step;
+    const div = document.createElement('div');
+    div.className = `nav-item ${active?'active':''} ${done&&!active?'done':''}`;
+    div.onclick = () => gotoStep(i);
+    div.innerHTML = `<div class="nav-dot">${done&&!active?'✓':i+1}</div><span>${s.title}</span>`;
+    nav.appendChild(div);
+  });
+
+  const done = STEPS.filter((_,i) => isComplete(i)).length;
+  const pct = Math.round(done / STEPS.length * 100);
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-lbl').textContent = pct + ' % udfyldt';
+  document.getElementById('topbar-title').textContent = STEPS[step].title;
+
+  document.getElementById('btn-prev').style.display = step > 0 ? 'inline-flex' : 'none';
+  document.getElementById('btn-next').style.display = step < STEPS.length-1 ? 'inline-flex' : 'none';
+  document.getElementById('nav-hint').textContent = `Trin ${step+1} af ${STEPS.length}`;
+}
+
+function isComplete(i) {
+  switch(i) {
+    case 0: return !!(S.meta.inst && S.meta.edu1);
+    case 1: return !!(S.plan.title && S.plan.purpose && S.plan.themes.length);
+    case 2: return S.weeks.some(w => w.theme && w.activities);
+    case 3: return !!S.eval.methods;
+    case 4: return false;
+    default: return false;
+  }
+}
+
+/* ============================================================
+   STEP TEMPLATES
+   ============================================================ */
+function tplSetup() {
+  const m = S.meta;
+  return `
+<div class="step-head">
+  <h1>⚙️ Opsætning</h1>
+  <p>Fortæl os hvem I er, og hvad I planlægger for. Oplysningerne bruges på forsiden af den færdige plan.</p>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">🏫</span> Institution & gruppe</div>
+  <div class="row2">
+    <div class="fg"><label>Institutionens navn *</label>
+      <input type="text" id="f-inst" placeholder="f.eks. Skovbørnehaven Egely" value="${x(m.inst)}"></div>
+    <div class="fg"><label>Gruppenavn / stue</label>
+      <input type="text" id="f-group" placeholder="f.eks. Egernstuen" value="${x(m.group)}"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">👥</span> Pædagogerne</div>
+  <div class="row2">
+    <div class="fg"><label>Pædagog 1 *</label>
+      <input type="text" id="f-edu1" placeholder="Fuldt navn" value="${x(m.edu1)}"></div>
+    <div class="fg"><label>Pædagog 2</label>
+      <input type="text" id="f-edu2" placeholder="Fuldt navn" value="${x(m.edu2)}"></div>
+  </div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📅</span> Periode & målgruppe</div>
+  <div class="row2">
+    <div class="fg"><label>Planperiode <span class="lh">(f.eks. Forår 2026)</span></label>
+      <input type="text" id="f-period" placeholder="Forår 2026" value="${x(m.period)}"></div>
+    <div class="fg"><label>Aldersgruppe</label>
+      <input type="text" id="f-age" value="${x(m.age)}"></div>
+  </div>
+</div>`;
+}
+
+function tplTheme() {
+  const p = S.plan;
+  const cbHtml = THEMES.map(t => {
+    const on = p.themes.includes(t.id);
+    return `<label class="theme-cb ${on?'on':''}" id="tcb-${t.id}">
+      <input type="checkbox" ${on?'checked':''} onchange="toggleTheme('plan','${t.id}',this)">
+      <div>
+        <div class="theme-cb-lbl">${t.e} ${t.label}</div>
+        <div class="theme-cb-sub">${t.abbr}</div>
+      </div>
+    </label>`;
+  }).join('');
+
+  const missing = 6 - p.themes.length;
+  const alert = missing > 0
+    ? `<div class="alert a-info" style="margin-top:.9rem;">ℹ️ ${missing} af 6 temaer er endnu ikke valgt. Alle skal dækkes i det samlede forløb.</div>`
+    : `<div class="alert a-ok" style="margin-top:.9rem;">✅ Alle seks læreplanstemaer er valgt!</div>`;
+
+  return `
+<div class="step-head">
+  <h1>🎯 Tema & formål</h1>
+  <p>Hvad er det overordnede tema for forløbet? Hvad er det pædagogiske formål, og hvilke læreplanstemaer sætter I fokus på?</p>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">✨</span> Overordnet tema</div>
+  <div class="fg"><label>Planens titel *</label>
+    <input type="text" id="f-ptitle" placeholder="f.eks. Vi hører hinanden — fællesskab og sprog" value="${x(p.title)}"></div>
+  <div class="fg"><label>Pædagogisk formål * <span class="lh">— hvad vil I opnå med dette forløb?</span></label>
+    <textarea id="f-ppurpose" placeholder="Beskriv det overordnede formål: hvad skal børnene opleve, lære og mærke?">${x(p.purpose)}</textarea></div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📚</span> Læreplanstemerne</div>
+  <p style="font-size:.85rem;color:var(--text-mid);margin-bottom:.9rem;">Vælg de temaer der er i primært fokus. Alle seks skal dækkes over de 8 uger.</p>
+  <div class="theme-grid">${cbHtml}</div>
+  ${alert}
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">🔍</span> Tilsynsfokus — overordnede linjer</div>
+  <p style="font-size:.85rem;color:var(--text-mid);margin-bottom:.9rem;">Beskriv kort, hvordan forløbet overordnet adresserer tilsynets fokuspunkter. I de enkelte uger uddyber I det konkret.</p>
+  <div class="insp-card">
+    <h4>💬 Sprogtilegnelsesmiljøet</h4>
+    <p>Hvordan støtter forløbet generelt sprogtilegnelsen?</p>
+    <textarea id="f-langGen" placeholder="f.eks. Forløbet bruger bevidst sproglige rutiner, navngivning og dialogbaserede aktiviteter...">${x(p.langGen)}</textarea>
+  </div>
+  <div class="insp-card">
+    <h4>🖼️ Rammesatte aktiviteter</h4>
+    <p>Hvordan sikrer I, at aktiviteterne er tydeligt rammesatte for børnene?</p>
+    <textarea id="f-framingGen" placeholder="f.eks. Aktiviteterne indledes med en klar markering og afsluttes med en fælles refleksion...">${x(p.framingGen)}</textarea>
+  </div>
+  <div class="insp-card">
+    <h4>🔄 Overgange</h4>
+    <p>Hvordan sikrer I fælles pædagogisk retning i overgange?</p>
+    <textarea id="f-transGen" placeholder="f.eks. Vi bruger faste signaler, Ankeret holder overblik og vi har aftalt fælles sprog...">${x(p.transGen)}</textarea>
+  </div>
+</div>`;
+}
+
+function tplWeeks() {
+  const tabs = S.weeks.map((w,i) => {
+    const filled = !!(w.theme || w.activities);
+    return `<div class="wtab ${i===week?'active':''} ${filled?'filled':''}" onclick="switchWeek(${i})">Uge ${i+1}</div>`;
+  }).join('');
+  return `
+<div class="step-head">
+  <h1>📅 Ugeplan</h1>
+  <p>Planlæg de otte uger én ad gangen. En orange prik på fanerne viser, at ugen er påbegyndt.</p>
+</div>
+<div class="week-tabs">${tabs}</div>
+<div id="week-body"></div>`;
+}
+
+function renderWeekContent(wi) {
+  const w = S.weeks[wi];
+  const e1 = S.meta.edu1 || 'Pædagog 1';
+  const e2 = S.meta.edu2 || 'Pædagog 2';
+  const eduOpts = (sel) => [
+    `<option value="">Vælg...</option>`,
+    `<option value="${x(e1)}" ${w[sel]===e1?'selected':''}>${x(e1)}</option>`,
+    `<option value="${x(e2)}" ${w[sel]===e2?'selected':''}>${x(e2)}</option>`,
+    `<option value="Begge" ${w[sel]==='Begge'?'selected':''}>Begge</option>`
+  ].join('');
+
+  const themeCb = THEMES.map(t => {
+    const on = (w.themes||[]).includes(t.id);
+    return `<label class="theme-cb ${on?'on':''}" id="wtcb-${wi}-${t.id}">
+      <input type="checkbox" ${on?'checked':''} onchange="toggleTheme('week_${wi}','${t.id}',this)">
+      <div><div class="theme-cb-lbl">${t.e} ${t.label}</div><div class="theme-cb-sub">${t.abbr}</div></div>
+    </label>`;
+  }).join('');
+
+  document.getElementById('week-body').innerHTML = `
+<div class="card">
+  <div class="card-title"><span class="ci">📌</span> Uge ${wi+1} — Ugens fokus</div>
+  <div class="fg"><label>Ugens tema / fokus</label>
+    <input type="text" id="wf-theme" placeholder="f.eks. Lytter vi til hinanden?" value="${x(w.theme)}"></div>
+  <div class="fg"><label>Planlagte aktiviteter <span class="lh">— beskriv de konkrete aktiviteter denne uge</span></label>
+    <textarea id="wf-activities" placeholder="Hvad sker der, hvornår, hvor og med hvem?">${x(w.activities)}</textarea></div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="ci">🧭</span> Voksenroller</div>
+  <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:1rem;">Fordel rollerne for ugen. En pædagog kan have flere roller — bemærk hvad det kræver i praksis.</p>
+  <div class="roles-grid">
+    <div class="role-card">
+      <div class="role-name">⚓ Ankeret</div>
+      <div class="role-hint">Holder overblik og håndterer praktiske afbrydelser — frigiver de andre til fordybelse</div>
+      <div class="fg"><label>Hvem?</label><select id="wf-ankeret">${eduOpts('ankeret')}</select></div>
+      <div class="fg"><label>Konkret i denne uge</label>
+        <textarea id="wf-ankeretRole" placeholder="Hvad gør Ankeret specifikt?" style="min-height:70px">${x(w.ankeretRole)}</textarea></div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">🎮 Legevogteren</div>
+      <div class="role-hint">Er dybt til stede i børnenes leg — følger og støtter uden at overtage eller styre</div>
+      <div class="fg"><label>Hvem?</label><select id="wf-legevogteren">${eduOpts('legevogteren')}</select></div>
+      <div class="fg"><label>Konkret i denne uge</label>
+        <textarea id="wf-legevogterenRole" placeholder="Hvad gør Legevogteren specifikt?" style="min-height:70px">${x(w.legevogterenRole)}</textarea></div>
+    </div>
+    <div class="role-card">
+      <div class="role-name">🚀 Igangsætteren</div>
+      <div class="role-hint">Bevæger sig derhen, hvor støtte er nødvendig — igangsætter uden at tage ejerskab</div>
+      <div class="fg"><label>Hvem?</label><select id="wf-igangsaetteren">${eduOpts('igangsaetteren')}</select></div>
+      <div class="fg"><label>Konkret i denne uge</label>
+        <textarea id="wf-igangsaetterenRole" placeholder="Hvad gør Igangsætteren specifikt?" style="min-height:70px">${x(w.igangsaetterenRole)}</textarea></div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="ci">🌊</span> Relationel tilgang</div>
+  <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:.9rem;">Hvilken relationel tilgang er primær fokus denne uge?</p>
+  <div class="rel-grid">
+    <div class="rel-opt ${w.relMode==='fyrtaarn'?'on':''}" onclick="setRelMode(${wi},'fyrtaarn',this)">
+      <h4>🔦 Fyrtårnet</h4>
+      <p>Den voksne giver retning gennem sproget og vejledningen. Tydelig, guidende og tilstedeværende.</p>
+    </div>
+    <div class="rel-opt ${w.relMode==='karavane'?'on':''}" onclick="setRelMode(${wi},'karavane',this)">
+      <h4>🐪 Karavaneføreren</h4>
+      <p>Den voksne låner ro og regulering via krop og nærværende co-regulering. Jordet og samregulerende.</p>
+    </div>
+  </div>
+  <div class="fg" style="margin-top:1rem;">
+    <label>Overvejelser om den relationelle tilgang denne uge</label>
+    <textarea id="wf-relNotes" placeholder="Hvad betyder denne tilgang konkret i de planlagte aktiviteter?">${x(w.relNotes)}</textarea>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="ci">🔍</span> Tilsynspunkter — konkret denne uge</div>
+  <div class="insp-card">
+    <h4>💬 Sprogtilegnelsesmiljøet</h4>
+    <p>Hvordan støtter aktiviteterne sprogtilegnelsen denne uge?</p>
+    <textarea id="wf-lang" placeholder="Navngivning, dialoger, gentagelser, bøger, sange — hvad gør I konkret?">${x(w.lang)}</textarea>
+  </div>
+  <div class="insp-card">
+    <h4>🖼️ Rammesatte aktiviteter</h4>
+    <p>Hvordan er aktiviteterne tydeligt rammesatte for børnene?</p>
+    <textarea id="wf-framing" placeholder="Indledning, afslutning — hvad er forudsigeligt og tydeligt for børnene?">${x(w.framing)}</textarea>
+  </div>
+  <div class="insp-card">
+    <h4>🔄 Overgange</h4>
+    <p>Hvad er den fælles pædagogiske retning i overgange denne uge?</p>
+    <textarea id="wf-transitions" placeholder="Hvilke overgange sker der? Hvem gør hvad? Hvad er det fælles signal?">${x(w.transitions)}</textarea>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="ci">📝</span> Dokumentation</div>
+  <div class="fg"><label>Hvad dokumenterer I, og hvordan? <span class="lh">— konkret for denne uge</span></label>
+    <textarea id="wf-doc" placeholder="f.eks. Fotos fra aktiviteten, kort refleksionsnotat efter torsdagens samling...">${x(w.doc)}</textarea></div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="ci">📚</span> Læreplanstemerne — uge ${wi+1}</div>
+  <p style="font-size:.84rem;color:var(--text-mid);margin-bottom:.9rem;">Hvilke temaer arbejder I med denne uge?</p>
+  <div class="theme-grid">${themeCb}</div>
+</div>`;
+}
+
+function switchWeek(wi) {
+  readWeekForm(week);
+  week = wi;
+  // update tabs
+  document.querySelectorAll('.wtab').forEach((t,i) => {
+    t.className = `wtab ${i===wi?'active':''} ${(S.weeks[i].theme||S.weeks[i].activities)?'filled':''}`;
+  });
+  renderWeekContent(wi);
+  bindWeekForm(wi);
+}
+
+function setRelMode(wi, mode, el) {
+  S.weeks[wi].relMode = mode;
+  document.querySelectorAll('.rel-opt').forEach(o => o.classList.remove('on'));
+  el.classList.add('on');
+}
+
+function tplEval() {
+  const ev = S.eval;
+  // Compute coverage
+  const covered = new Set([...S.plan.themes]);
+  S.weeks.forEach(w => (w.themes||[]).forEach(t => covered.add(t)));
+  const badges = THEMES.map(t => `<div class="badge ${covered.has(t.id)?'on':''}">${t.e} ${t.abbr} ${covered.has(t.id)?'✓':'–'}</div>`).join('');
+  const missing = 6 - covered.size;
+
+  return `
+<div class="step-head">
+  <h1>📊 Dokumentation & evaluering</h1>
+  <p>Planlæg, hvordan I dokumenterer og evaluerer forløbet. En god evalueringsplan gør det lettere at lære af perioden.</p>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📊</span> Læreplansdækning</div>
+  <p style="font-size:.84rem;color:var(--text-mid);">Temaer dækket i jeres plan:</p>
+  <div class="badge-row">${badges}</div>
+  ${missing > 0
+    ? `<div class="alert a-warn">⚠️ ${missing} tema(er) er endnu ikke dækket. Gå tilbage til ugerne og tilføj de manglende temaer.</div>`
+    : `<div class="alert a-ok">✅ Alle seks læreplanstemaer er dækket!</div>`}
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📝</span> Dokumentationsplan</div>
+  <div class="fg"><label>Dokumentationsmetoder *</label>
+    <textarea id="f-emethods" placeholder="Fotos, video, børneinterviews, praksisfortællinger, observationsnotater...">${x(ev.methods)}</textarea></div>
+  <div class="fg"><label>Ansvarlig for dokumentation</label>
+    <input type="text" id="f-eresp" placeholder="Hvem har det primære ansvar?" value="${x(ev.responsible)}"></div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">🎯</span> Evalueringsplan</div>
+  <div class="fg"><label>Succeskriterier — hvornår lykkedes det?</label>
+    <textarea id="f-ecrit" placeholder="Hvad observerer I hos børnene, hvis forløbet har haft den ønskede effekt?">${x(ev.criteria)}</textarea></div>
+  <div class="row2">
+    <div class="fg"><label>Evalueringsdato</label>
+      <input type="date" id="f-edate" value="${x(ev.date)}"></div>
+  </div>
+  <div class="fg"><label>Yderligere noter</label>
+    <textarea id="f-enotes" placeholder="Refleksion, videndeling, opfølgning...">${x(ev.notes)}</textarea></div>
+</div>`;
+}
+
+function tplExport() {
+  const m = S.meta;
+  const p = S.plan;
+  const e1 = m.edu1 || '–';
+  const e2 = m.edu2 || '–';
+
+  const weekRows = S.weeks.map((w,i) => {
+    const tLabels = (w.themes||[]).map(id => {
+      const t = THEMES.find(t=>t.id===id);
+      return t ? t.abbr : id;
+    }).join(', ');
+    const rel = w.relMode === 'fyrtaarn' ? '🔦 Fyrtårnet' : w.relMode === 'karavane' ? '🐪 Karavanen' : '–';
+    return `<tr>
+      <td><strong>Uge ${i+1}</strong></td>
+      <td>${x(w.theme)||'–'}</td>
+      <td>${x(w.ankeret)||'–'}</td>
+      <td>${rel}</td>
+      <td>${tLabels||'–'}</td>
+    </tr>`;
+  }).join('');
+
+  const covered = new Set([...p.themes]);
+  S.weeks.forEach(w => (w.themes||[]).forEach(t => covered.add(t)));
+
+  return `
+<div class="step-head">
+  <h1>📄 Oversigt & eksport</h1>
+  <p>Her ser I et overblik over den samlede plan. Eksportér til print/PDF eller gem som JSON-fil.</p>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📋</span> Planens metadata</div>
+  <div style="font-size:.93rem;line-height:2.1;">
+    <strong>Institution:</strong> ${x(m.inst)||'–'} &nbsp;·&nbsp; <strong>Gruppe:</strong> ${x(m.group)||'–'}<br>
+    <strong>Pædagoger:</strong> ${x(e1)} og ${x(e2)}<br>
+    <strong>Periode:</strong> ${x(m.period)||'–'} &nbsp;·&nbsp; <strong>Aldersgruppe:</strong> ${x(m.age)||'–'}
+  </div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">🎯</span> ${x(p.title)||'Planens titel'}</div>
+  <p style="font-size:.93rem;margin-bottom:.75rem;">${x(p.purpose)||'–'}</p>
+  <div class="badge-row">
+    ${p.themes.map(id => { const t=THEMES.find(ct=>ct.id===id); return t?`<div class="badge on">${t.e} ${t.label}</div>`:''; }).join('')}
+  </div>
+</div>
+<div class="card">
+  <div class="card-title"><span class="ci">📅</span> Ugeoversigt</div>
+  <div style="overflow-x:auto;">
+    <table class="ov-table">
+      <thead><tr><th>Uge</th><th>Tema</th><th>Ankeret</th><th>Rel. tilgang</th><th>Læreplantemaer</th></tr></thead>
+      <tbody>${weekRows}</tbody>
+    </table>
+  </div>
+</div>
+<div class="export-card">
+  <h3>Klar til eksport</h3>
+  <p>Brug print/PDF til institutionens mapper. Gem som JSON for at dele planen med en kollega eller fortsætte i en ny session.</p>
+  <div class="export-row">
+    <button class="btn-export" onclick="printPlan()">🖨️ Udskriv / Gem som PDF</button>
+    <button class="btn-export-sec" onclick="saveJSON()">⬇️ Gem som JSON-fil</button>
+  </div>
+</div>`;
+}
+
+/* ============================================================
+   CURRICULUM THEME TOGGLE
+   ============================================================ */
+function toggleTheme(ctx, id, checkbox) {
+  const lbl = checkbox.closest('.theme-cb');
+  const on = checkbox.checked;
+  if (on) lbl.classList.add('on'); else lbl.classList.remove('on');
+
+  if (ctx === 'plan') {
+    if (on) { if (!S.plan.themes.includes(id)) S.plan.themes.push(id); }
+    else S.plan.themes = S.plan.themes.filter(t=>t!==id);
+  } else if (ctx.startsWith('week_')) {
+    const wi = parseInt(ctx.split('_')[1]);
+    if (!S.weeks[wi].themes) S.weeks[wi].themes = [];
+    if (on) { if (!S.weeks[wi].themes.includes(id)) S.weeks[wi].themes.push(id); }
+    else S.weeks[wi].themes = S.weeks[wi].themes.filter(t=>t!==id);
+  }
+}
+
+/* ============================================================
+   FORM BINDING
+   ============================================================ */
+const MAIN_BINDINGS = {
+  'f-inst':       ['meta','inst'],
+  'f-group':      ['meta','group'],
+  'f-edu1':       ['meta','edu1'],
+  'f-edu2':       ['meta','edu2'],
+  'f-period':     ['meta','period'],
+  'f-age':        ['meta','age'],
+  'f-ptitle':     ['plan','title'],
+  'f-ppurpose':   ['plan','purpose'],
+  'f-langGen':    ['plan','langGen'],
+  'f-framingGen': ['plan','framingGen'],
+  'f-transGen':   ['plan','transGen'],
+  'f-emethods':   ['eval','methods'],
+  'f-eresp':      ['eval','responsible'],
+  'f-ecrit':      ['eval','criteria'],
+  'f-edate':      ['eval','date'],
+  'f-enotes':     ['eval','notes']
+};
+
+function bindMainForm() {
+  Object.entries(MAIN_BINDINGS).forEach(([id,[obj,key]]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => S[obj][key] = el.value);
+    el.addEventListener('change', () => S[obj][key] = el.value);
+  });
+}
+
+function readFormInto() {
+  Object.entries(MAIN_BINDINGS).forEach(([id,[obj,key]]) => {
+    const el = document.getElementById(id);
+    if (el) S[obj][key] = el.value;
+  });
+}
+
+const WEEK_FIELDS = ['theme','activities','ankeret','ankeretRole','legevogteren','legevogterenRole',
+  'igangsaetteren','igangsaetterenRole','relNotes','lang','framing','transitions','doc'];
+
+function bindWeekForm(wi) {
+  WEEK_FIELDS.forEach(f => {
+    const el = document.getElementById('wf-'+f);
+    if (!el) return;
+    el.addEventListener('input', () => S.weeks[wi][f] = el.value);
+    el.addEventListener('change', () => S.weeks[wi][f] = el.value);
+  });
+}
+
+function readWeekForm(wi) {
+  WEEK_FIELDS.forEach(f => {
+    const el = document.getElementById('wf-'+f);
+    if (el) S.weeks[wi][f] = el.value;
+  });
+}
+
+/* ============================================================
+   SAVE / LOAD / EXPORT
+   ============================================================ */
+function savePlan() {
+  flushCurrentStep();
+  localStorage.setItem('pplan', JSON.stringify(S));
+  const now = new Date().toLocaleTimeString('da-DK', {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('save-status').textContent = '✓ Gemt ' + now;
+}
+
+setInterval(() => {
+  if (!document.getElementById('app').classList.contains('hidden')) {
+    savePlan();
+  }
+}, 60000);
+
+function saveJSON() {
+  flushCurrentStep();
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = (S.plan.title || 'PædagoPlanen').replace(/[^a-zA-Z0-9æøåÆØÅ_ -]/g, '') + '.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importJSON(evt) {
+  const file = evt.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const d = JSON.parse(e.target.result);
+      mergeState(d);
+      startApp(false);
+    } catch(err) {
+      alert('Kunne ikke indlæse filen — kontrollér at det er en gyldig PædagoPlanen JSON-fil.');
+    }
+  };
+  reader.readAsText(file);
+  evt.target.value = '';
+}
+
+/* ============================================================
+   PRINT / PDF
+   ============================================================ */
+function printPlan() {
+  flushCurrentStep();
+
+  const m = S.meta;
+  const p = S.plan;
+  const ev = S.eval;
+  const e1 = m.edu1 || '–';
+  const e2 = m.edu2 || '–';
+
+  const weekBlocks = S.weeks.map((w,i) => {
+    const themes = (w.themes||[]).map(id => {
+      const t = THEMES.find(ct=>ct.id===id);
+      return t ? `${t.e} ${t.label}` : id;
+    }).join(', ');
+    const rel = w.relMode==='fyrtaarn' ? '🔦 Fyrtårnet' : w.relMode==='karavane' ? '🐪 Karavaneføreren' : '–';
+
+    return `<div class="pd-week">
+      <div class="pd-week-head">Uge ${i+1}${w.theme ? ': '+xh(w.theme) : ''}</div>
+      <div class="pd-week-body">
+        <div class="pd-field pd-full"><label>Aktiviteter</label><p>${xh(w.activities)||'–'}</p></div>
+        <div class="pd-field"><label>⚓ Ankeret</label><p>${xh(w.ankeret)||'–'}${w.ankeretRole ? '<br><em>'+xh(w.ankeretRole)+'</em>' : ''}</p></div>
+        <div class="pd-field"><label>🎮 Legevogteren</label><p>${xh(w.legevogteren)||'–'}${w.legevogterenRole ? '<br><em>'+xh(w.legevogterenRole)+'</em>' : ''}</p></div>
+        <div class="pd-field"><label>🚀 Igangsætteren</label><p>${xh(w.igangsaetteren)||'–'}${w.igangsaetterenRole ? '<br><em>'+xh(w.igangsaetterenRole)+'</em>' : ''}</p></div>
+        <div class="pd-field"><label>Relationel tilgang</label><p>${rel}${w.relNotes ? ' — '+xh(w.relNotes) : ''}</p></div>
+        <div class="pd-field"><label>💬 Sprogtilegnelsesmiljø</label><p>${xh(w.lang)||'–'}</p></div>
+        <div class="pd-field"><label>🖼️ Rammesatte aktiviteter</label><p>${xh(w.framing)||'–'}</p></div>
+        <div class="pd-field"><label>🔄 Overgange</label><p>${xh(w.transitions)||'–'}</p></div>
+        <div class="pd-field"><label>📝 Dokumentation</label><p>${xh(w.doc)||'–'}</p></div>
+        <div class="pd-field"><label>Læreplantemaer</label><p>${themes||'–'}</p></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const themeLabels = (p.themes||[]).map(id => {
+    const t = THEMES.find(ct=>ct.id===id);
+    return t ? `${t.e} ${t.label}` : id;
+  }).join(' · ');
+
+  document.getElementById('print-doc').innerHTML = `
+<div class="pd">
+  <div class="pd-head">
+    <img src="Asset 3.svg" alt="Logo" onerror="this.style.display='none'">
+    <div>
+      <h1>${xh(p.title)||'Pædagogisk 8-ugers plan'}</h1>
+      <div class="meta">
+        ${xh(m.inst)||''}${m.group?' · '+xh(m.group):''} · ${xh(e1)} og ${xh(e2)} · ${xh(m.period)||''} · ${xh(m.age)||''}
+      </div>
+    </div>
+  </div>
+
+  <div class="pd-section">
+    <h2>Pædagogisk formål</h2>
+    <p>${xh(p.purpose)||'–'}</p>
+    <h3>Læreplantemaer i fokus</h3>
+    <p>${themeLabels||'–'}</p>
+  </div>
+
+  <div class="pd-section">
+    <h2>Overordnede tilsynspunkter</h2>
+    <h3>💬 Sprogtilegnelsesmiljøet</h3><p>${xh(p.langGen)||'–'}</p>
+    <h3>🖼️ Rammesatte aktiviteter</h3><p>${xh(p.framingGen)||'–'}</p>
+    <h3>🔄 Overgange</h3><p>${xh(p.transGen)||'–'}</p>
+  </div>
+
+  <div class="pd-section">
+    <h2>8-ugers plan</h2>
+    ${weekBlocks}
+  </div>
+
+  <div class="pd-section">
+    <h2>Dokumentation & evaluering</h2>
+    <h3>Dokumentationsmetoder</h3><p>${xh(ev.methods)||'–'}</p>
+    <h3>Succeskriterier</h3><p>${xh(ev.criteria)||'–'}</p>
+    <h3>Ansvarlig</h3><p>${xh(ev.responsible)||'–'}</p>
+    ${ev.date ? `<h3>Evalueringsdato</h3><p>${xh(ev.date)}</p>` : ''}
+    ${ev.notes ? `<h3>Yderligere noter</h3><p>${xh(ev.notes)}</p>` : ''}
+  </div>
+
+  <div class="pd-footer">
+    Genereret med PædagoPlanen &nbsp;·&nbsp; ${new Date().toLocaleDateString('da-DK', {day:'numeric',month:'long',year:'numeric'})}
+  </div>
+</div>`;
+
+  // Show print doc, hide app, print, restore
+  const appEl = document.getElementById('app');
+  const pdEl = document.getElementById('print-doc');
+  pdEl.style.display = 'block';
+  appEl.style.display = 'none';
+
+  window.addEventListener('afterprint', function restore() {
+    pdEl.style.display = 'none';
+    appEl.style.display = 'flex';
+    window.removeEventListener('afterprint', restore);
+  });
+
+  setTimeout(() => window.print(), 100);
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+// Escape for HTML attributes (values in attributes)
+function x(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+// Escape for HTML content (inner text, allows <br>)
+function xh(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+</script>
+</body>
+</html>
