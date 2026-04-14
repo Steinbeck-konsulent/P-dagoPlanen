@@ -359,6 +359,73 @@
     .pd-full { grid-column: 1 / -1; }
     .pd-footer { margin-top: 2rem; padding-top: .75rem; border-top: 1px solid #c8e1bf; font-size: .72rem; color: #6b8f72; text-align: center; }
 
+    /* ── PLAN LIST (velkomstskærm) ───────────────────────── */
+    .welcome-wide {
+      min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
+      background: linear-gradient(140deg, var(--green-dark) 0%, #186330 55%, #2e8b57 100%);
+      padding: 3rem 2rem; animation: fadeIn .5s ease;
+    }
+    .welcome-inner { width: 100%; max-width: 680px; }
+    .welcome-top {
+      display: flex; align-items: center; gap: 1.1rem;
+      margin-bottom: 2rem;
+    }
+    .welcome-top img, .welcome-top svg { width: 52px; height: 52px; border-radius: 10px; flex-shrink: 0; }
+    .welcome-top-text h1 { color: white; font-size: 1.6rem; font-weight: 800; margin: 0; }
+    .welcome-top-text p  { color: rgba(255,255,255,.7); font-size: .88rem; margin: .15rem 0 0; }
+
+    .plan-list-section {
+      background: white; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow-lg);
+    }
+    .plan-list-head {
+      padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .plan-list-head h2 { font-size: 1rem; font-weight: 700; color: var(--green-dark); }
+    .plan-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-light);
+      transition: background var(--ease);
+    }
+    .plan-item:last-child { border-bottom: none; }
+    .plan-item:hover { background: var(--surface); }
+    .plan-item-info { flex: 1; min-width: 0; }
+    .plan-item-name { font-weight: 700; color: var(--text-dark); font-size: .93rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .plan-item-meta { font-size: .75rem; color: var(--text-soft); margin-top: .1rem; }
+    .plan-item-actions { display: flex; gap: .5rem; flex-shrink: 0; margin-left: 1rem; }
+    .btn-open {
+      background: var(--orange); color: white; border: none;
+      padding: .45rem 1.1rem; border-radius: 50px; font-size: .82rem; font-weight: 700;
+      cursor: pointer; transition: background var(--ease);
+    }
+    .btn-open:hover { background: var(--orange-hover); }
+    .btn-del {
+      background: none; border: 1.5px solid #e0b0b0; color: #c0392b;
+      padding: .4rem .75rem; border-radius: 50px; font-size: .8rem;
+      cursor: pointer; transition: all var(--ease);
+    }
+    .btn-del:hover { background: #fdecea; }
+    .plan-empty {
+      padding: 2.5rem 1.5rem; text-align: center; color: var(--text-soft); font-size: .9rem;
+    }
+    .plan-list-footer {
+      padding: 1rem 1.5rem; border-top: 1px solid var(--border-light);
+      display: flex; gap: .75rem; flex-wrap: wrap; align-items: center;
+    }
+
+    /* ── TOPBAR plan-navn + tilbage-knap ─────────────────── */
+    .topbar-left { display: flex; align-items: center; gap: .85rem; }
+    .btn-back-plans {
+      background: var(--surface); color: var(--text-mid); border: 1px solid var(--border);
+      padding: .4rem .85rem; border-radius: 50px; font-size: .8rem; font-weight: 600;
+      cursor: pointer; transition: all var(--ease); white-space: nowrap;
+    }
+    .btn-back-plans:hover { background: var(--green-light); color: var(--green-dark); }
+    .topbar-titles { line-height: 1.25; }
+    .topbar-title { color: var(--green-dark); font-size: 1rem; font-weight: 700; display: block; }
+    .topbar-planname { color: var(--text-soft); font-size: .78rem; display: block; margin-top: .05rem; }
+
     @media (max-width: 820px) {
       .sidebar { display: none; }
       .main { margin-left: 0; }
@@ -370,28 +437,37 @@
 <body>
 
 <!-- ── WELCOME ──────────────────────────────────────────────── -->
-<div id="welcome-screen" class="welcome">
-  <div class="welcome-card">
-    <img src="Asset 3.svg" alt="PædagoPlanen logo" class="welcome-logo"
-         onerror="this.style.display='none'; document.getElementById('logo-fb').style.display='block'">
-    <svg id="logo-fb" class="welcome-logo-fb" viewBox="0 0 76 76">
-      <rect width="76" height="76" rx="13" fill="#104f25"/>
-      <polygon points="38,10 66,62 10,62" fill="#f07f3c"/>
-      <polygon points="38,26 28,50 48,50" fill="white" opacity=".9"/>
-      <circle cx="38" cy="40" r="4" fill="white"/>
-    </svg>
-    <h1>PædagoPlanen</h1>
-    <p class="tagline">8-ugers pædagogisk planlægningsværktøj for dagtilbud</p>
-    <div class="welcome-desc">
-      <strong>To pædagoger. Én struktureret plan.</strong><br>
-      Guider jer trin for trin igennem alle seks læreplanstemaer, tilsynspunkter og konkrete voksenroller — fra intention til dokumentation.
+<div id="welcome-screen" class="welcome-wide">
+  <div class="welcome-inner">
+    <div class="welcome-top">
+      <img src="Asset 3.svg" alt="PædagoPlanen logo"
+           onerror="this.style.display='none'; document.getElementById('logo-fb').style.display='block'">
+      <svg id="logo-fb" style="display:none;flex-shrink:0" viewBox="0 0 52 52" width="52" height="52">
+        <rect width="52" height="52" rx="9" fill="#104f25"/>
+        <polygon points="26,6 46,44 6,44" fill="#f07f3c"/>
+        <polygon points="26,18 19,36 33,36" fill="white" opacity=".9"/>
+      </svg>
+      <div class="welcome-top-text">
+        <h1>PædagoPlanen</h1>
+        <p>8-ugers pædagogisk planlægningsværktøj for dagtilbud</p>
+      </div>
     </div>
-    <button class="btn-cta" onclick="startApp(false)">Start ny plan &rarr;</button><br>
-    <button class="btn-ghost-sm" id="btn-load" style="display:none" onclick="startApp(true)">&#128196; Fortsæt gemt plan</button><br>
-    <label class="btn-ghost-sm" style="cursor:pointer">
-      &#128228; Importer plan (JSON)
-      <input type="file" accept=".json" id="import-file" style="display:none" onchange="importJSON(event)">
-    </label>
+
+    <div class="plan-list-section">
+      <div class="plan-list-head">
+        <h2>Mine planer</h2>
+      </div>
+      <div id="plan-list-items">
+        <div class="plan-empty">Ingen gemte planer endnu. Start en ny plan nedenfor.</div>
+      </div>
+      <div class="plan-list-footer">
+        <button class="btn-cta" onclick="startNewPlan()">+ Ny plan</button>
+        <label class="btn-ghost-sm" style="cursor:pointer;margin-top:0;">
+          &#128228; Importer JSON
+          <input type="file" accept=".json" id="import-file" style="display:none" onchange="importJSON(event)">
+        </label>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -414,7 +490,13 @@
 
   <div class="main">
     <div class="topbar">
-      <span class="topbar-title" id="topbar-title">Opsætning</span>
+      <div class="topbar-left">
+        <button class="btn-back-plans" onclick="goToDashboard()">&#8592; Alle planer</button>
+        <div class="topbar-titles">
+          <span class="topbar-title" id="topbar-title">Opsætning</span>
+          <span class="topbar-planname" id="topbar-planname">Ny plan</span>
+        </div>
+      </div>
       <div class="topbar-actions">
         <span class="save-status" id="save-status">Ikke gemt</span>
         <button class="btn-save" onclick="savePlan()">&#128190; Gem</button>
@@ -512,21 +594,127 @@ let step = 0;
 let activeWeek = 0;
 
 /* ============================================================
-   INIT
+   PLAN MANAGER
    ============================================================ */
-window.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('pplan_v2')) document.getElementById('btn-load').style.display = 'inline-flex';
-});
+const PLANS_KEY = 'pplan_plans';
+let currentPlanId = null;
 
-function startApp(load) {
-  if (load) {
-    try { const d = JSON.parse(localStorage.getItem('pplan_v2')); if (d) mergeState(d); } catch(e) {}
+function getPlans() {
+  try { return JSON.parse(localStorage.getItem(PLANS_KEY)) || []; } catch(e) { return []; }
+}
+function savePlans(plans) {
+  localStorage.setItem(PLANS_KEY, JSON.stringify(plans));
+}
+
+function autoName(state) {
+  const parts = [];
+  if (state.meta.period) parts.push(state.meta.period);
+  if (state.meta.group)  parts.push(state.meta.group);
+  else if (state.meta.inst) parts.push(state.meta.inst);
+  if (state.meta.age)    parts.push(state.meta.age);
+  return parts.length ? parts.join(' — ') : 'Unavngivet plan';
+}
+
+function resetState() {
+  S = {
+    meta: { inst:'', group:'', period:'', age:'3–5 år',
+      personnel:[emptyPerson(1),emptyPerson(2)], groups:[emptyGroup(1)] },
+    focusPoint: {
+      begrundelse:'', baggrund:'', erfaringer:'', data:'',
+      afgrænsning:'', målbeskrivelse:'', tidsramme:'',
+      handlinger:'', positionering:'', metodevalg:'', dataBehov:'',
+      fokus:'', forandringer:'', evalueringsform:'',
+      løbende:'', afsluttende:'', ansvarsfordeling:'', vedhæftninger:''
+    },
+    plan: { title:'', purpose:'', themes:[], langGen:'', framingGen:'', transGen:'' },
+    docs: { methods:'', responsible:'', frequency:'' },
+    weeks: Array.from({length:8}, (_,i)=>emptyWeek(i+1)),
+    midterm: { observations:'', achievements:'', challenges:'', adjustments:'', responsible:'' },
+    eval: { criteria:'', responsible:'', date:'', notes:'' }
+  };
+}
+
+function renderDashboard() {
+  const plans = getPlans();
+  const container = document.getElementById('plan-list-items');
+  if (!plans.length) {
+    container.innerHTML = '<div class="plan-empty">Ingen gemte planer endnu. Start en ny plan nedenfor.</div>';
+    return;
   }
+  container.innerHTML = plans.map(p => {
+    const updated = new Date(p.updated).toLocaleDateString('da-DK',{day:'numeric',month:'short',year:'numeric'});
+    const created = new Date(p.created).toLocaleDateString('da-DK',{day:'numeric',month:'short',year:'numeric'});
+    return `
+    <div class="plan-item">
+      <div class="plan-item-info">
+        <div class="plan-item-name">${x(p.name)}</div>
+        <div class="plan-item-meta">Oprettet ${created} &nbsp;·&nbsp; Sidst gemt ${updated}</div>
+      </div>
+      <div class="plan-item-actions">
+        <button class="btn-open" onclick="openPlan('${p.id}')">Åbn</button>
+        <button class="btn-del" onclick="deletePlan('${p.id}')" title="Slet plan">Slet</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function startNewPlan() {
+  currentPlanId = 'plan_' + Date.now();
+  resetState();
+  const plans = getPlans();
+  plans.unshift({ id:currentPlanId, name:'Ny plan', created:new Date().toISOString(), updated:new Date().toISOString(), state:S });
+  savePlans(plans);
+  openEditor();
+}
+
+function openPlan(id) {
+  const plans = getPlans();
+  const plan = plans.find(p=>p.id===id);
+  if (!plan) return;
+  currentPlanId = id;
+  resetState();
+  mergeState(plan.state);
+  openEditor();
+}
+
+function deletePlan(id) {
+  if (!confirm('Er du sikker på, at du vil slette denne plan? Det kan ikke fortrydes.')) return;
+  const plans = getPlans().filter(p=>p.id!==id);
+  savePlans(plans);
+  renderDashboard();
+}
+
+function openEditor() {
+  step = 0; activeWeek = 0;
   document.getElementById('welcome-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   document.getElementById('app-footer').classList.remove('hidden');
   render();
 }
+
+function goToDashboard() {
+  savePlan();
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('app-footer').classList.add('hidden');
+  document.getElementById('welcome-screen').classList.remove('hidden');
+  renderDashboard();
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  // Migrer gammel enkelt-plan til ny liste-struktur
+  const old = localStorage.getItem('pplan_v2');
+  if (old && !localStorage.getItem(PLANS_KEY)) {
+    try {
+      const d = JSON.parse(old);
+      const id = 'plan_migrated';
+      savePlans([{ id, name: autoName(d), created: new Date().toISOString(), updated: new Date().toISOString(), state: d }]);
+    } catch(e) {}
+  }
+  renderDashboard();
+});
 
 function mergeState(d) {
   if (d.meta) S.meta = { ...S.meta, ...d.meta, personnel: d.meta.personnel||S.meta.personnel, groups: d.meta.groups||S.meta.groups };
@@ -585,6 +773,8 @@ function renderNav() {
   document.getElementById('prog-fill').style.width = pct+'%';
   document.getElementById('prog-lbl').textContent = pct+' % udfyldt';
   document.getElementById('topbar-title').textContent = STEPS[step].title;
+  const tn = document.getElementById('topbar-planname');
+  if (tn) tn.textContent = autoName(S);
   document.getElementById('btn-prev').style.display = step>0?'inline-flex':'none';
   document.getElementById('btn-next').style.display = step<STEPS.length-1?'inline-flex':'none';
   document.getElementById('nav-hint').textContent = `Trin ${step+1} af ${STEPS.length}`;
@@ -1380,7 +1570,22 @@ function readWeekForm(wi) {
    ============================================================ */
 function savePlan() {
   flushStep();
-  localStorage.setItem('pplan_v2', JSON.stringify(S));
+  if (!currentPlanId) return;
+  const plans = getPlans();
+  const name = autoName(S);
+  const idx = plans.findIndex(p=>p.id===currentPlanId);
+  const entry = {
+    id: currentPlanId,
+    name,
+    created: idx>=0 ? plans[idx].created : new Date().toISOString(),
+    updated: new Date().toISOString(),
+    state: S
+  };
+  if (idx>=0) plans[idx] = entry; else plans.unshift(entry);
+  savePlans(plans);
+  // Opdatér plannavn i topbaren
+  const tn = document.getElementById('topbar-planname');
+  if (tn) tn.textContent = name;
   const t = new Date().toLocaleTimeString('da-DK',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('save-status').textContent = '✓ Gemt '+t;
 }
@@ -1400,8 +1605,16 @@ function importJSON(evt) {
   const file = evt.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    try { const d=JSON.parse(e.target.result); mergeState(d); startApp(false); }
-    catch(err) { alert('Kunne ikke indlæse filen — kontrollér at det er en gyldig PædagoPlanen JSON-fil.'); }
+    try {
+      const d = JSON.parse(e.target.result);
+      currentPlanId = 'plan_import_' + Date.now();
+      resetState();
+      mergeState(d);
+      const plans = getPlans();
+      plans.unshift({ id:currentPlanId, name:autoName(S), created:new Date().toISOString(), updated:new Date().toISOString(), state:S });
+      savePlans(plans);
+      openEditor();
+    } catch(err) { alert('Kunne ikke indlæse filen — kontrollér at det er en gyldig PædagoPlanen JSON-fil.'); }
   };
   reader.readAsText(file); evt.target.value='';
 }
