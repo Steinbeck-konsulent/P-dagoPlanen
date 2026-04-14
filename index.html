@@ -682,9 +682,8 @@ function tplSetup() {
 }
 
 function bindSetupEvents() {
-  // Personnel fields
   document.querySelectorAll('.pname').forEach(el => {
-    el.addEventListener('input', () => {
+    on(el, () => {
       const p = S.meta.personnel.find(p=>p.id===el.dataset.pid);
       if (p) p.name = el.value;
       refreshGroupMemberLists();
@@ -697,9 +696,8 @@ function bindSetupEvents() {
       refreshGroupMemberLists();
     });
   });
-  // Group name fields
   document.querySelectorAll('.gname').forEach(el => {
-    el.addEventListener('input', () => {
+    on(el, () => {
       const g = S.meta.groups.find(g=>g.id===el.dataset.gid);
       if (g) g.name = el.value;
     });
@@ -1313,17 +1311,23 @@ const FP_MAP = [
   'løbende','afsluttende','ansvarsfordeling','vedhæftninger'
 ];
 
+// Binder input, change OG paste (paste kræver setTimeout så DOM-værdien er klar)
+function on(el, cb) {
+  el.addEventListener('input',  cb);
+  el.addEventListener('change', cb);
+  el.addEventListener('paste',  () => setTimeout(cb, 0));
+}
+
 function bindMainForm() {
   Object.entries(MAIN_MAP).forEach(([id,[obj,key]]) => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener('input', ()=>S[obj][key]=el.value);
-    el.addEventListener('change', ()=>S[obj][key]=el.value);
+    on(el, ()=>S[obj][key]=el.value);
   });
   FP_MAP.forEach(key => {
     const el = document.getElementById('fp-'+key);
     if (!el) return;
-    el.addEventListener('input', ()=>S.focusPoint[key]=el.value);
+    on(el, ()=>S.focusPoint[key]=el.value);
   });
 }
 
@@ -1353,14 +1357,13 @@ function bindWeekForm(wi) {
   WEEK_FIELDS.forEach(f => {
     const el = document.getElementById('wf-'+f);
     if (!el) return;
-    el.addEventListener('input', ()=>S.weeks[wi][f]=el.value);
-    el.addEventListener('change', ()=>S.weeks[wi][f]=el.value);
+    on(el, ()=>S.weeks[wi][f]=el.value);
   });
-  // Group activities
+  // Gruppeaktiviteter
   S.meta.groups.filter(g=>g.name).forEach(g => {
     const el = document.getElementById('wf-grp-'+g.id);
     if (!el) return;
-    el.addEventListener('input', ()=>{ if (!S.weeks[wi].groupActivities) S.weeks[wi].groupActivities={}; S.weeks[wi].groupActivities[g.id]=el.value; });
+    on(el, ()=>{ if (!S.weeks[wi].groupActivities) S.weeks[wi].groupActivities={}; S.weeks[wi].groupActivities[g.id]=el.value; });
   });
 }
 
