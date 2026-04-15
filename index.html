@@ -585,6 +585,7 @@ function emptyWeek(n) {
     ankeret: '', ankeretRole: '',
     legevogteren: '', legevogterenRole: '',
     igangsaetteren: '', igangsaetterenRole: '',
+    vikar: '', vikarNote: '',
     relMode: '', relNotes: '',
     langNote: '', framingNote: '', transNote: '', docNote: '',
     themes: []
@@ -1299,6 +1300,24 @@ ${groupSection}
         <textarea id="wf-igangsaetterenRole" style="min-height:70px" placeholder="Hvad gør Igangsætteren specifikt?">${x(w.igangsaetterenRole)}</textarea></div>
     </div>
   </div>
+  <div style="margin-top:1rem;padding:1rem;background:#f5f5f5;border:1.5px dashed var(--border);border-radius:var(--r-sm);display:grid;grid-template-columns:1fr 1fr;gap:1rem;align-items:start;">
+    <div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">🔄 Vikar / Backup</div>
+      <div style="font-size:.75rem;color:var(--text-soft);margin-bottom:.75rem;line-height:1.4;">Hvem er tilgængelig som backup denne uge, hvis en af de faste ikke kan?</div>
+      <div class="fg" style="margin-bottom:0;">
+        <label>Hvem?</label>
+        <select id="wf-vikar">${opts('vikar')}</select>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">&nbsp;</div>
+      <div style="font-size:.75rem;color:var(--text-soft);margin-bottom:.75rem;">&nbsp;</div>
+      <div class="fg" style="margin-bottom:0;">
+        <label>Note (valgfri)</label>
+        <input type="text" id="wf-vikarNote" placeholder="f.eks. tilgængelig tirsd.-tors." value="${x(w.vikarNote)}">
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="card">
@@ -1575,7 +1594,7 @@ function readMainForm() {
 }
 
 const WEEK_FIELDS = ['theme','activities','ankeret','ankeretRole','legevogteren','legevogterenRole',
-  'igangsaetteren','igangsaetterenRole','relNotes','langNote','framingNote','transNote','docNote'];
+  'igangsaetteren','igangsaetterenRole','vikar','vikarNote','relNotes','langNote','framingNote','transNote','docNote'];
 
 function bindWeekForm(wi) {
   WEEK_FIELDS.forEach(f => {
@@ -1683,6 +1702,8 @@ function printPlan() {
         <div class="pd-field"><label>⚓ Ankeret</label><p>${xh(w.ankeret)||'–'}${w.ankeretRole?'<br><em>'+xh(w.ankeretRole)+'</em>':''}</p></div>
         <div class="pd-field"><label>🎮 Legevogteren</label><p>${xh(w.legevogteren)||'–'}${w.legevogterenRole?'<br><em>'+xh(w.legevogterenRole)+'</em>':''}</p></div>
         <div class="pd-field"><label>🚀 Igangsætteren</label><p>${xh(w.igangsaetteren)||'–'}${w.igangsaetterenRole?'<br><em>'+xh(w.igangsaetterenRole)+'</em>':''}</p></div>
+        ${w.vikar?`<div class="pd-field"><label>🔄 Vikar / Backup</label><p>${xh(w.vikar)}${w.vikarNote?' — <em>'+xh(w.vikarNote)+'</em>':''}</p></div>`:''}
+
         <div class="pd-field"><label>Relationel tilgang</label><p>${rel}${w.relNotes?' — '+xh(w.relNotes):''}</p></div>
         <div class="pd-field"><label>💬 Sprogtilegnelsesmiljø</label><p>${xh(w.langNote)||'–'}</p></div>
         <div class="pd-field"><label>🖼️ Rammesætning</label><p>${xh(w.framingNote)||'–'}</p></div>
