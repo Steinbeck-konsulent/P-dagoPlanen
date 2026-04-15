@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PædagoPlanen — 8-ugers pædagogisk planlægning</title>
   <link rel="icon" href="Asset 3.svg" type="image/svg+xml">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --green-dark:   #104f25;
@@ -336,29 +335,6 @@
       margin-left: 256px;
     }
 
-    /* ── PRINT ───────────────────────────────────────────── */
-    @media print {
-      body * { visibility: hidden; }
-      #print-doc, #print-doc * { visibility: visible; }
-      #print-doc { position: absolute; top: 0; left: 0; width: 100%; display: block !important; }
-    }
-    #print-doc { display: none; }
-    .pd { padding: 2cm; font-family: Georgia, serif; color: #1a2e1f; }
-    .pd-head { display: flex; align-items: flex-start; gap: 1.2rem; margin-bottom: 2rem; padding-bottom: 1.2rem; border-bottom: 3px solid #104f25; }
-    .pd-head img { width: 52px; height: 52px; border-radius: 8px; }
-    .pd-head h1 { font-size: 1.4rem; color: #104f25; margin: 0 0 .3rem; }
-    .pd-head .meta { font-size: .78rem; color: #6b8f72; }
-    .pd-section { margin-bottom: 2rem; }
-    .pd-section h2 { color: #104f25; font-size: 1.05rem; border-bottom: 2px solid #c8e1bf; padding-bottom: .4rem; margin-bottom: 1rem; }
-    .pd-section h3 { color: #3d5a44; font-size: .95rem; margin: 1rem 0 .35rem; }
-    .pd-section p { font-size: .88rem; line-height: 1.6; }
-    .pd-week { border: 1px solid #a8c9a0; border-radius: 6px; margin-bottom: 1rem; overflow: hidden; page-break-inside: avoid; }
-    .pd-week-head { background: #104f25; color: white; padding: .5rem 1rem; font-weight: 700; font-size: .88rem; }
-    .pd-week-body { padding: .85rem 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: .6rem; }
-    .pd-field label { font-size: .7rem; font-weight: 700; color: #6b8f72; text-transform: uppercase; letter-spacing: .05em; display: block; margin-bottom: .15rem; }
-    .pd-field p { font-size: .82rem; line-height: 1.5; }
-    .pd-full { grid-column: 1 / -1; }
-    .pd-footer { margin-top: 2rem; padding-top: .75rem; border-top: 1px solid #c8e1bf; font-size: .72rem; color: #6b8f72; text-align: center; }
 
     /* ── PLAN LIST (velkomstskærm) ───────────────────────── */
     .welcome-wide {
@@ -506,6 +482,7 @@
       <div class="topbar-actions">
         <span class="save-status" id="save-status">Ikke gemt</span>
         <button class="btn-save" onclick="savePlan()">&#128190; Gem</button>
+        <button class="btn-save" onclick="saveWord()" style="color:#2b5797;" title="Gem dette trin som Word-dokument">&#128196; Gem som Word</button>
       </div>
     </div>
     <div class="step-wrap" id="step-content"></div>
@@ -547,27 +524,6 @@
   </div>
 </div>
 
-<div id="print-doc"></div>
-
-<!-- PRINT CONFIRM MODAL -->
-<div id="print-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
-  <div style="background:white;border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.25);">
-    <h2 style="color:#104f25;font-size:1.1rem;margin-bottom:.75rem;">🖨️ Gem som PDF</h2>
-    <p style="font-size:.88rem;color:#3d5a44;line-height:1.6;margin-bottom:.9rem;">
-      Dette dokument kan indeholde oplysninger om børn — opbevar det forsvarligt.
-    </p>
-    <div style="background:#f0f7ec;border-left:3px solid #104f25;border-radius:0 8px 8px 0;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.84rem;color:#3d5a44;line-height:1.7;">
-      <strong>Sådan gemmer du som PDF:</strong><br>
-      1. Klik "Åbn printdialog" nedenfor<br>
-      2. Under <em>Destination / Printer</em> — vælg <strong>Gem som PDF</strong><br>
-      3. Klik Gem
-    </div>
-    <div style="display:flex;gap:.75rem;">
-      <button onclick="doPrintNow()" style="flex:1;background:#104f25;color:white;border:none;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:700;cursor:pointer;">Åbn printdialog</button>
-      <button onclick="document.getElementById('print-modal').style.display='none'" style="flex:1;background:none;border:1.5px solid #a8c9a0;color:#3d5a44;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:600;cursor:pointer;">Annuller</button>
-    </div>
-  </div>
-</div>
 
 <!-- ── JAVASCRIPT ────────────────────────────────────────────── -->
 <script>
@@ -1530,28 +1486,21 @@ function tplEval() {
 <div class="card" style="border-top:4px solid var(--orange);">
   <div class="card-title"><span class="ci">📤</span> Eksport</div>
 
-  <button onclick="doPrintNow()" id="pdf-btn" style="
-    display:flex;align-items:center;justify-content:center;gap:.75rem;
-    width:100%;padding:1.1rem;margin-bottom:1.5rem;
-    background:var(--orange);color:white;border:none;border-radius:var(--r);
-    font-size:1.05rem;font-weight:800;cursor:pointer;
-    transition:background var(--ease);"
-    onmouseover="this.style.background='var(--orange-hover)'"
-    onmouseout="this.style.background='var(--orange)'">
-    📄 Generer PDF
-  </button>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+    <div style="background:var(--surface);border-radius:var(--r-sm);padding:1rem;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">📝 Word-eksport</div>
+      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">Brug "Gem som Word" øverst til højre for at eksportere hvert trin som Word-dokument.</p>
+      <button onclick="saveWord()" class="btn-sec" style="width:100%;justify-content:center;color:#2b5797;">📄 Gem dette trin som Word</button>
+    </div>
     <div style="background:var(--surface);border-radius:var(--r-sm);padding:1rem;">
       <div style="font-size:.8rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">📥 Del med kollega</div>
-      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">Gem planen som JSON-fil og send til en kollega, der kan importere den.</p>
+      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">Gem hele planen som JSON og send til en kollega, der kan importere den.</p>
       <button onclick="saveJSON()" class="btn-sec" style="width:100%;justify-content:center;">⬇️ Gem som JSON</button>
     </div>
-    <div style="background:var(--surface);border-radius:var(--r-sm);padding:1rem;">
-      <div style="font-size:.8rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">🔒 GDPR</div>
-      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">PDF og JSON kan indeholde oplysninger om børn — opbevar og slet forsvarligt.</p>
-      <button onclick="showDataProtection()" class="btn-sec" style="width:100%;justify-content:center;">Databeskyttelse</button>
-    </div>
+  </div>
+  <div style="background:var(--surface);border-radius:var(--r-sm);padding:.85rem 1rem;font-size:.82rem;color:var(--text-mid);display:flex;align-items:center;gap:.75rem;">
+    🔒 Word-filer kan indeholde oplysninger om børn — opbevar og slet forsvarligt.
+    <button onclick="showDataProtection()" style="background:none;border:none;color:var(--text-soft);font-size:.8rem;cursor:pointer;text-decoration:underline;white-space:nowrap;padding:0;">Databeskyttelse</button>
   </div>
 </div>`;
 }
@@ -1733,15 +1682,147 @@ function importJSON(evt) {
 }
 
 /* ============================================================
-   PRINT / PDF
+   WORD EKSPORT
    ============================================================ */
-function doPrintNow() {
+function saveWord() {
   flushStep();
-  const m=S.meta, p=S.plan, ev=S.eval, mt=S.midterm, fp=S.focusPoint;
-  const eduNames = m.personnel.filter(p=>p.name).map(p=>`${x(p.name)} (${x(p.role)})`).join(', ') || '–';
-  const groupNames = m.groups.filter(g=>g.name).map(g=>x(g.name)).join(', ') || '–';
+  const stepNum  = step + 1;
+  const stepTitle = STEPS[step].title;
+  const planMeta = [S.meta.inst, S.meta.group, S.meta.period].filter(Boolean).join(' · ');
+  const filename = 'PædagoPlanen_Trin-' + stepNum + '.doc';
 
-  const weekBlocks = S.weeks.map((w,i) => {
+  const wLbl = t => `<p style="font-size:8.5pt;font-weight:bold;color:#6b8f72;text-transform:uppercase;letter-spacing:.04em;margin:10pt 0 2pt;">${t}</p>`;
+  const wVal = v => `<p style="margin:0 0 6pt;">${v ? String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>') : '<span style="color:#bbb;font-style:italic;">–</span>'}</p>`;
+
+  const content = wordStepContent(stepNum, wLbl, wVal);
+
+  const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office"
+    xmlns:w="urn:schemas-microsoft-com:office:word"
+    xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>PædagoPlanen Trin ${stepNum}</title>
+<style>
+body{font-family:Calibri,sans-serif;font-size:11pt;color:#1a2e1f;margin:2cm 2.5cm;}
+h1{color:#104f25;font-size:16pt;border-bottom:2pt solid #104f25;padding-bottom:4pt;margin-bottom:2pt;}
+h2{color:#104f25;font-size:13pt;margin-top:14pt;margin-bottom:2pt;border-bottom:1pt solid #c8e1bf;padding-bottom:2pt;}
+h3{color:#3d5a44;font-size:11pt;margin-top:10pt;margin-bottom:2pt;}
+p{margin:0 0 6pt;line-height:1.5;}
+hr{border:none;border-top:1pt solid #c8e1bf;margin:10pt 0;}
+table{border-collapse:collapse;width:100%;margin-top:6pt;}
+th{background:#104f25;color:white;padding:5pt 8pt;font-size:10pt;text-align:left;font-weight:bold;}
+td{padding:5pt 8pt;border:1pt solid #a8c9a0;font-size:10pt;vertical-align:top;}
+.week-head{background:#104f25;color:white;padding:5pt 10pt;font-weight:bold;font-size:11pt;margin-top:14pt;margin-bottom:0;}
+.week-body{border:1pt solid #a8c9a0;padding:8pt 10pt;margin-bottom:14pt;}
+</style></head>
+<body>
+<h1>PædagoPlanen — Trin ${stepNum}: ${stepTitle}</h1>
+<p style="color:#6b8f72;font-size:9pt;margin-top:0;">${planMeta}</p>
+<hr>
+${content}
+<p style="margin-top:20pt;color:#aaa;font-size:8pt;border-top:1pt solid #e0e0e0;padding-top:6pt;">
+  Steinbeck · CVR 46174496 · Genereret ${new Date().toLocaleDateString('da-DK',{day:'numeric',month:'long',year:'numeric'})}
+</p>
+</body></html>`;
+
+  const blob = new Blob(['\ufeff' + html], {type:'application/msword'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function wordStepContent(n, lbl, val) {
+  const m=S.meta, p=S.plan, fp=S.focusPoint, ev=S.eval, mt=S.midterm;
+
+  // Hjælper: uge-blok
+  const weekBlock = (w, wi) => {
+    const themes = (w.themes||[]).map(id=>{const t=THEMES.find(t=>t.id===id);return t?t.e+' '+t.label:id;}).join(', ')||'–';
+    const rel = w.relMode==='fyrtaarn'?'Fyrtårnet':w.relMode==='karavane'?'Karavaneføreren':'–';
+    const p1 = [w.ankeret,w.ankeret2].filter(Boolean).join(' & ')||'–';
+    const p2 = [w.legevogteren,w.legevogteren2].filter(Boolean).join(' & ')||'–';
+    const p3 = [w.igangsaetteren,w.igangsaetteren2].filter(Boolean).join(' & ')||'–';
+    const grpRows = m.groups.filter(g=>g.name&&(w.groupActivities||{})[g.id]).map(g=>
+      `${lbl(g.name)}${val((w.groupActivities||{})[g.id])}`).join('');
+    return `<div class="week-head">Uge ${wi+1}${w.theme?' — '+w.theme:''}</div>
+<div class="week-body">
+  ${grpRows}
+  ${lbl('⚓ Ankeret')}${val(p1)}${w.ankeretRole?lbl('Konkret')+ val(w.ankeretRole):''}
+  ${lbl('🎮 Legevogteren')}${val(p2)}${w.legevogterenRole?lbl('Konkret')+val(w.legevogterenRole):''}
+  ${lbl('🚀 Igangsætteren')}${val(p3)}${w.igangsaetterenRole?lbl('Konkret')+val(w.igangsaetterenRole):''}
+  ${w.vikar?lbl('🔄 Vikar / Backup')+val(w.vikar+(w.vikarNote?' — '+w.vikarNote:'')):''}
+  ${lbl('Relationel tilgang')}${val(rel+(w.relNotes?' — '+w.relNotes:''))}
+  ${w.langNote?lbl('Sprogtilegnelsesmiljø')+val(w.langNote):''}
+  ${w.framingNote?lbl('Rammesætning')+val(w.framingNote):''}
+  ${w.transNote?lbl('Overgange')+val(w.transNote):''}
+  ${w.docNote?lbl('Dokumentation')+val(w.docNote):''}
+  ${lbl('Læreplantemaer')}${val(themes)}
+</div>`;
+  };
+
+  switch(n) {
+    case 1: { // Opsætning
+      const personnel = m.personnel.filter(p=>p.name).map(p=>p.name+' ('+p.role+')').join(', ')||'–';
+      const groups = m.groups.filter(g=>g.name).map(g=>{
+        const names = g.members.map(mid=>{const p=m.personnel.find(p=>p.id===mid);return p?p.name:null;}).filter(Boolean).join(', ');
+        return g.name+(names?' ('+names+')':'');
+      }).join(', ')||'–';
+      return `<h2>Institution &amp; gruppe</h2>
+        ${lbl('Institution')}${val(m.inst)}
+        ${lbl('Gruppe')}${val(m.group)}
+        ${lbl('Periode')}${val(m.period)}
+        ${lbl('Aldersgruppe')}${val(m.age)}
+        <h2>Personale</h2>${lbl('Medarbejdere')}${val(personnel)}
+        <h2>Børnegrupper</h2>${lbl('Grupper')}${val(groups)}`;
+    }
+    case 2: { // Fokuspunkt
+      const secs = [
+        {t:'Sammenhæng', fs:[['Begrundelse',fp.begrundelse],['Baggrund',fp.baggrund],['Erfaringer',fp.erfaringer],['Data',fp.data]]},
+        {t:'Mål', fs:[['Afgrænsning',fp.afgrænsning],['Målbeskrivelse',fp.målbeskrivelse],['Tidsramme',fp.tidsramme]]},
+        {t:'Tiltag', fs:[['Handlinger',fp.handlinger],['Positionering',fp.positionering],['Metodevalg',fp.metodevalg],['Databehov',fp.dataBehov]]},
+        {t:'Tegn', fs:[['Fokus',fp.fokus],['Forventede forandringer',fp.forandringer]]},
+        {t:'Evaluering', fs:[['Evalueringsform',fp.evalueringsform],['Løbende',fp.løbende],['Afsluttende',fp.afsluttende]]},
+        {t:'Ansvarsfordeling', fs:[['Ansvarsfordeling',fp.ansvarsfordeling]]},
+        {t:'Vedhæftninger', fs:[['Vedhæftninger',fp.vedhæftninger]]}
+      ];
+      return secs.map(s=>`<h2>${s.t}</h2>${s.fs.map(([l,v])=>lbl(l)+val(v)).join('')}`).join('');
+    }
+    case 3: { // Tema & formål
+      const themes = (p.themes||[]).map(id=>{const t=THEMES.find(t=>t.id===id);return t?t.e+' '+t.label:id;}).join(', ')||'–';
+      return `${lbl('Plantitel')}${val(p.title)}${lbl('Formål')}${val(p.purpose)}${lbl('Læreplantemaer')}${val(themes)}
+        <h2>Generelle noter</h2>
+        ${lbl('Sprogtilegnelsesmiljø')}${val(p.langGen)}
+        ${lbl('Rammesætning')}${val(p.framingGen)}
+        ${lbl('Overgange')}${val(p.transGen)}`;
+    }
+    case 4: { // Dokumentation
+      return `${lbl('Dokumentationsmetoder')}${val(S.docs.methods)}${lbl('Ansvarlig')}${val(S.docs.responsible)}${lbl('Frekvens')}${val(S.docs.frequency)}`;
+    }
+    case 5: // Ugeplan 1-4
+    case 7: { // Ugeplan 5-8
+      const from = n===5?0:4, to = n===5?3:7;
+      return S.weeks.slice(from,to+1).map((w,i)=>weekBlock(w,from+i)).join('');
+    }
+    case 6: { // Midtvejsevaluering
+      return `${lbl('Observationer fra uge 1–4')}${val(mt.observations)}
+        ${lbl('Hvad fungerede godt?')}${val(mt.achievements)}
+        ${lbl('Hvad fungerede ikke?')}${val(mt.challenges)}
+        ${lbl('Justeringer for uge 5–8')}${val(mt.adjustments)}
+        ${lbl('Ansvarlig')}${val(mt.responsible)}`;
+    }
+    case 8: { // Slutevaluering
+      const rows = S.weeks.map((w,i)=>{
+        const tl=(w.themes||[]).map(id=>{const t=THEMES.find(t=>t.id===id);return t?t.abbr:id;}).join(', ')||'–';
+        const rel=w.relMode==='fyrtaarn'?'Fyrtårnet':w.relMode==='karavane'?'Karavanen':'–';
+        return `<tr><td><b>Uge ${i+1}</b></td><td>${w.theme||'–'}</td><td>${[w.ankeret,w.ankeret2].filter(Boolean).join(' & ')||'–'}</td><td>${rel}</td><td>${tl}</td></tr>`;
+      }).join('');
+      return `${lbl('Succeskriterier')}${val(ev.criteria)}${lbl('Afsluttende vurdering')}${val(ev.notes)}${lbl('Ansvarlig')}${val(ev.responsible)}${lbl('Evalueringsdato')}${val(ev.date)}
+        <h2>Ugeoversigt</h2>
+        <table><thead><tr><th>Uge</th><th>Tema</th><th>Ankeret</th><th>Rel. tilgang</th><th>Læreplantemaer</th></tr></thead><tbody>${rows}</tbody></table>`;
+    }
+    default: return '<p>–</p>';
+  }
+}
+
+/* FJERNET GAMMEL PDF-KODE — erstattet af saveWord()
+function _removed() {
+  const m=S.meta;
+  return S.weeks.map((w,i) => {
     const themes=(w.themes||[]).map(id=>{const t=THEMES.find(ct=>ct.id===id);return t?`${t.e} ${t.label}`:id;}).join(', ');
     const rel=w.relMode==='fyrtaarn'?'🔦 Fyrtårnet':w.relMode==='karavane'?'🐪 Karavaneføreren':'–';
     const grpRows = m.groups.filter(g=>g.name&&(w.groupActivities||{})[g.id]).map(g=>`
