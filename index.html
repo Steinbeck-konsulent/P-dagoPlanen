@@ -1528,9 +1528,9 @@ function tplEval() {
 </div>
 <div class="export-card">
   <h3>Klar til eksport</h3>
-  <p>Udskriv til PDF via browserens printfunktion, eller gem som JSON for at dele med en kollega eller fortsætte i en ny session.</p>
+  <p>Gem som PDF: klik knappen → i printvinduet vælg <strong style="color:white;">Gem som PDF</strong> som destination → klik Gem.</p>
   <div class="export-row">
-    <button class="btn-export" onclick="printPlan()">🖨️ Udskriv / Gem som PDF</button>
+    <button class="btn-export" onclick="doPrintNow()">🖨️ Udskriv / Gem som PDF</button>
     <button class="btn-export-sec" onclick="saveJSON()">⬇️ Gem som JSON-fil</button>
   </div>
 </div>`;
@@ -1715,14 +1715,7 @@ function importJSON(evt) {
 /* ============================================================
    PRINT / PDF
    ============================================================ */
-function printPlan() {
-  const modal = document.getElementById('print-modal');
-  modal.style.display = 'flex';
-  modal.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
-}
-
 function doPrintNow() {
-  document.getElementById('print-modal').style.display = 'none';
   flushStep();
   const m=S.meta, p=S.plan, ev=S.eval, mt=S.midterm, fp=S.focusPoint;
   const eduNames = m.personnel.filter(p=>p.name).map(p=>`${x(p.name)} (${x(p.role)})`).join(', ') || '–';
