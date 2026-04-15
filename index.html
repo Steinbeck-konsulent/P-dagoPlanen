@@ -1527,12 +1527,31 @@ function tplEval() {
     </table>
   </div>
 </div>
-<div class="export-card">
-  <h3>Klar til eksport</h3>
-  <p>Klik knappen — PDF'en åbner i en ny fane, og medarbejderne gemmer den derfra.</p>
-  <div class="export-row">
-    <button class="btn-export" onclick="doPrintNow()">🖨️ Udskriv / Gem som PDF</button>
-    <button class="btn-export-sec" onclick="saveJSON()">⬇️ Gem som JSON-fil</button>
+<div class="card" style="border-top:4px solid var(--orange);">
+  <div class="card-title"><span class="ci">📤</span> Eksport</div>
+
+  <button onclick="doPrintNow()" id="pdf-btn" style="
+    display:flex;align-items:center;justify-content:center;gap:.75rem;
+    width:100%;padding:1.1rem;margin-bottom:1.5rem;
+    background:var(--orange);color:white;border:none;border-radius:var(--r);
+    font-size:1.05rem;font-weight:800;cursor:pointer;
+    transition:background var(--ease);"
+    onmouseover="this.style.background='var(--orange-hover)'"
+    onmouseout="this.style.background='var(--orange)'">
+    📄 Generer PDF
+  </button>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div style="background:var(--surface);border-radius:var(--r-sm);padding:1rem;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">📥 Del med kollega</div>
+      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">Gem planen som JSON-fil og send til en kollega, der kan importere den.</p>
+      <button onclick="saveJSON()" class="btn-sec" style="width:100%;justify-content:center;">⬇️ Gem som JSON</button>
+    </div>
+    <div style="background:var(--surface);border-radius:var(--r-sm);padding:1rem;">
+      <div style="font-size:.8rem;font-weight:700;color:var(--text-soft);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem;">🔒 GDPR</div>
+      <p style="font-size:.82rem;color:var(--text-mid);margin-bottom:.75rem;line-height:1.5;">PDF og JSON kan indeholde oplysninger om børn — opbevar og slet forsvarligt.</p>
+      <button onclick="showDataProtection()" class="btn-sec" style="width:100%;justify-content:center;">Databeskyttelse</button>
+    </div>
   </div>
 </div>`;
 }
@@ -1842,7 +1861,7 @@ function doPrintNow() {
   pdEl.style.display = 'block';
 
   const filename = (S.plan.title||'PædagoPlanen').replace(/[^a-zA-Z0-9æøåÆØÅ_ -]/g,'') + '.pdf';
-  const btn = document.querySelector('[onclick="doPrintNow()"]');
+  const btn = document.getElementById('pdf-btn');
   if (btn) { btn.textContent = '⏳ Genererer PDF...'; btn.disabled = true; }
 
   html2pdf().set({
@@ -1852,11 +1871,11 @@ function doPrintNow() {
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
   }).from(pdEl).output('bloburl').then(url => {
     pdEl.style.display = 'none';
-    if (btn) { btn.textContent = '🖨️ Udskriv / Gem som PDF'; btn.disabled = false; }
+    if (btn) { btn.innerHTML = '📄 Generer PDF'; btn.disabled = false; }
     window.open(url, '_blank');
   }).catch(() => {
     pdEl.style.display = 'none';
-    if (btn) { btn.textContent = '🖨️ Udskriv / Gem som PDF'; btn.disabled = false; }
+    if (btn) { btn.innerHTML = '📄 Generer PDF'; btn.disabled = false; }
     alert('Kunne ikke generere PDF — kontrollér at du er online (kræver internetforbindelse første gang).');
   });
 }
