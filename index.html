@@ -267,6 +267,17 @@
     .theme-cb-lbl { font-size: .83rem; font-weight: 600; color: var(--text-dark); }
     .theme-cb-sub { font-size: .73rem; color: var(--text-soft); font-weight: 400; }
 
+    /* kompakt variant til ugeplanen */
+    .theme-grid-sm { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .4rem; }
+    .theme-cb-sm {
+      display: flex; align-items: center; gap: .4rem; padding: .35rem .55rem;
+      border: 1.5px solid var(--border); border-radius: var(--r-sm); cursor: pointer;
+      transition: all var(--ease); background: var(--white); font-size: .78rem;
+    }
+    .theme-cb-sm:hover { border-color: var(--orange); background: var(--orange-soft); }
+    .theme-cb-sm.on { border-color: var(--orange); background: var(--orange-soft); }
+    .theme-cb-sm input { accent-color: var(--orange); flex-shrink: 0; margin: 0; }
+
     /* ── INSPECTION CARDS ────────────────────────────────── */
     .insp-card { border-left: 3px solid var(--orange); background: var(--orange-soft); padding: 1rem 1.2rem; border-radius: 0 var(--r-sm) var(--r-sm) 0; margin-bottom: 1rem; }
     .insp-card:last-child { margin-bottom: 0; }
@@ -1173,9 +1184,9 @@ function renderWeekContent(wi) {
 
   const themeCbs = THEMES.map(t => {
     const on = (w.themes||[]).includes(t.id);
-    return `<label class="theme-cb ${on?'on':''}">
+    return `<label class="theme-cb-sm ${on?'on':''}">
       <input type="checkbox" ${on?'checked':''} onchange="toggleTheme('week_${wi}','${t.id}',this)">
-      <div><div class="theme-cb-lbl">${t.e} ${t.label}</div><div class="theme-cb-sub">${t.abbr}</div></div>
+      ${t.e} ${t.abbr}
     </label>`;
   }).join('');
 
@@ -1314,7 +1325,7 @@ ${groupSection}
 
 <div class="card">
   <div class="card-title"><span class="ci">📚</span> Læreplanstemerne — uge ${wi+1}</div>
-  <div class="theme-grid">${themeCbs}</div>
+  <div class="theme-grid-sm">${themeCbs}</div>
 </div>`;
 }
 
@@ -1466,7 +1477,7 @@ function tplEval() {
    THEME TOGGLE
    ============================================================ */
 function toggleTheme(ctx, id, checkbox) {
-  const lbl = checkbox.closest('.theme-cb');
+  const lbl = checkbox.closest('.theme-cb, .theme-cb-sm');
   if (checkbox.checked) lbl.classList.add('on'); else lbl.classList.remove('on');
   if (ctx==='plan') {
     if (checkbox.checked) { if (!S.plan.themes.includes(id)) S.plan.themes.push(id); }
