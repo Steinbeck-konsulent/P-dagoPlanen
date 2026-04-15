@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PædagoPlanen — 8-ugers pædagogisk planlægning</title>
   <link rel="icon" href="Asset 3.svg" type="image/svg+xml">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --green-dark:   #104f25;
@@ -1528,7 +1529,7 @@ function tplEval() {
 </div>
 <div class="export-card">
   <h3>Klar til eksport</h3>
-  <p>Gem som PDF: klik knappen → i printvinduet vælg <strong style="color:white;">Gem som PDF</strong> som destination → klik Gem.</p>
+  <p>Klik knappen — PDF'en åbner i en ny fane, og medarbejderne gemmer den derfra.</p>
   <div class="export-row">
     <button class="btn-export" onclick="doPrintNow()">🖨️ Udskriv / Gem som PDF</button>
     <button class="btn-export-sec" onclick="saveJSON()">⬇️ Gem som JSON-fil</button>
@@ -1837,14 +1838,27 @@ function doPrintNow() {
   </div>
 </div>`;
 
-  const appEl=document.getElementById('app'), pdEl=document.getElementById('print-doc');
-  const footerEl=document.getElementById('app-footer');
-  pdEl.style.display='block'; appEl.style.display='none'; footerEl.style.display='none';
-  window.addEventListener('afterprint', function restore() {
-    pdEl.style.display='none'; appEl.style.display='flex'; footerEl.style.display='block';
-    window.removeEventListener('afterprint',restore);
+  const pdEl = document.getElementById('print-doc');
+  pdEl.style.display = 'block';
+
+  const filename = (S.plan.title||'PædagoPlanen').replace(/[^a-zA-Z0-9æøåÆØÅ_ -]/g,'') + '.pdf';
+  const btn = document.querySelector('[onclick="doPrintNow()"]');
+  if (btn) { btn.textContent = '⏳ Genererer PDF...'; btn.disabled = true; }
+
+  html2pdf().set({
+    margin: [12, 14, 12, 14],
+    filename: filename,
+    html2canvas: { scale: 2, useCORS: true, logging: false },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  }).from(pdEl).output('bloburl').then(url => {
+    pdEl.style.display = 'none';
+    if (btn) { btn.textContent = '🖨️ Udskriv / Gem som PDF'; btn.disabled = false; }
+    window.open(url, '_blank');
+  }).catch(() => {
+    pdEl.style.display = 'none';
+    if (btn) { btn.textContent = '🖨️ Udskriv / Gem som PDF'; btn.disabled = false; }
+    alert('Kunne ikke generere PDF — kontrollér at du er online (kræver internetforbindelse første gang).');
   });
-  window.print();
 }
 
 /* ============================================================
