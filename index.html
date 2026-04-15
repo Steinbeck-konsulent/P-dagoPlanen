@@ -1236,7 +1236,7 @@ function renderWeekContent(wi) {
   </div>` : '';
 
   document.getElementById('week-body').innerHTML = `
-${fpRef || inspRef || docRef ? `<div style="margin-bottom:1.25rem;">${fpRef}${inspRef}${docRef}</div>` : ''}
+${fpRef || docRef ? `<div style="margin-bottom:1.25rem;">${fpRef}${docRef}</div>` : ''}
 
 <div class="card">
   <div class="card-title"><span class="ci">📌</span> Uge ${wi+1} — Ugens fokus</div>
@@ -1310,43 +1310,6 @@ ${groupSection}
   </div>
 </div>
 
-<div class="card">
-  <div class="card-title"><span class="ci">🌊</span> Relationel tilgang</div>
-  <div class="rel-grid">
-    <div class="rel-opt ${w.relMode==='fyrtaarn'?'on':''}" onclick="setRelMode(${wi},'fyrtaarn',this)">
-      <h4>🔦 Fyrtårnet</h4>
-      <p>Den voksne giver retning gennem sproget og vejledningen. Tydelig, guidende og tilstedeværende.</p>
-    </div>
-    <div class="rel-opt ${w.relMode==='karavane'?'on':''}" onclick="setRelMode(${wi},'karavane',this)">
-      <h4>🐪 Karavaneføreren</h4>
-      <p>Den voksne låner ro og regulering via krop og nærværende samregulering. Jordet og beroligende.</p>
-    </div>
-  </div>
-  <div class="fg" style="margin-top:1rem;">
-    <label>Overvejelser om den relationelle tilgang denne uge</label>
-    <textarea id="wf-relNotes" placeholder="Hvad betyder denne tilgang konkret i de planlagte aktiviteter?">${x(w.relNotes)}</textarea>
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title"><span class="ci">🔍</span> Tilsynspunkter — specifikt denne uge</div>
-  ${inspRef ? '<p style="font-size:.84rem;color:var(--text-mid);margin-bottom:1rem;">Se det overordnede grundlag i referenceboksen øverst. Skriv her hvad I konkret gør denne uge.</p>' : ''}
-  <div class="insp-card">
-    <h4>💬 Sprogtilegnelsesmiljøet</h4>
-    <p>Hvad gør I konkret denne uge for at støtte sprogtilegnelsen?</p>
-    <textarea id="wf-langNote" placeholder="Navngivning, dialoger, gentagelser, bøger, sange...">${x(w.langNote)}</textarea>
-  </div>
-  <div class="insp-card">
-    <h4>🖼️ Rammesatte aktiviteter</h4>
-    <p>Hvordan er aktiviteterne tydeligt rammesatte for børnene denne uge?</p>
-    <textarea id="wf-framingNote" placeholder="Indledning, afslutning — hvad er forudsigeligt for børnene?">${x(w.framingNote)}</textarea>
-  </div>
-  <div class="insp-card">
-    <h4>🔄 Overgange</h4>
-    <p>Hvad er den fælles pædagogiske retning i overgange denne uge?</p>
-    <textarea id="wf-transNote" placeholder="Hvilke overgange sker der? Hvem gør hvad? Hvad er det fælles signal?">${x(w.transNote)}</textarea>
-  </div>
-</div>
 
 <div class="card">
   <div class="card-title"><span class="ci">📝</span> Dokumentation — denne uge</div>
