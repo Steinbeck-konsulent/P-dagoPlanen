@@ -582,9 +582,9 @@ function emptyWeek(n) {
   return {
     number: n, theme: '', activities: '',
     groupActivities: {},
-    ankeret: '', ankeretRole: '',
-    legevogteren: '', legevogterenRole: '',
-    igangsaetteren: '', igangsaetterenRole: '',
+    ankeret: '', ankeret2: '', ankeretRole: '',
+    legevogteren: '', legevogteren2: '', legevogterenRole: '',
+    igangsaetteren: '', igangsaetteren2: '', igangsaetterenRole: '',
     vikar: '', vikarNote: '',
     relMode: '', relNotes: '',
     langNote: '', framingNote: '', transNote: '', docNote: '',
@@ -1278,24 +1278,36 @@ ${groupSection}
     <div class="role-card">
       <div class="role-name">⚓ Ankeret</div>
       <div class="role-hint">Holder overblik og håndterer praktiske afbrydelser — frigiver de andre til fordybelse</div>
-      <div class="fg"><label>Hvem?</label>
-        <select id="wf-ankeret">${opts('ankeret')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+        <div class="fg"><label>Person 1</label>
+          <select id="wf-ankeret">${opts('ankeret')}</select></div>
+        <div class="fg"><label>Person 2</label>
+          <select id="wf-ankeret2">${opts('ankeret2')}</select></div>
+      </div>
       <div class="fg"><label>Konkret i denne uge</label>
         <textarea id="wf-ankeretRole" style="min-height:70px" placeholder="Hvad gør Ankeret specifikt?">${x(w.ankeretRole)}</textarea></div>
     </div>
     <div class="role-card">
       <div class="role-name">🎮 Legevogteren</div>
       <div class="role-hint">Er dybt til stede i børnenes leg — følger og støtter uden at overtage</div>
-      <div class="fg"><label>Hvem?</label>
-        <select id="wf-legevogteren">${opts('legevogteren')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+        <div class="fg"><label>Person 1</label>
+          <select id="wf-legevogteren">${opts('legevogteren')}</select></div>
+        <div class="fg"><label>Person 2</label>
+          <select id="wf-legevogteren2">${opts('legevogteren2')}</select></div>
+      </div>
       <div class="fg"><label>Konkret i denne uge</label>
         <textarea id="wf-legevogterenRole" style="min-height:70px" placeholder="Hvad gør Legevogteren specifikt?">${x(w.legevogterenRole)}</textarea></div>
     </div>
     <div class="role-card">
       <div class="role-name">🚀 Igangsætteren</div>
       <div class="role-hint">Bevæger sig derhen, hvor støtte er nødvendig — igangsætter uden at tage ejerskab</div>
-      <div class="fg"><label>Hvem?</label>
-        <select id="wf-igangsaetteren">${opts('igangsaetteren')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.65rem;">
+        <div class="fg"><label>Person 1</label>
+          <select id="wf-igangsaetteren">${opts('igangsaetteren')}</select></div>
+        <div class="fg"><label>Person 2</label>
+          <select id="wf-igangsaetteren2">${opts('igangsaetteren2')}</select></div>
+      </div>
       <div class="fg"><label>Konkret i denne uge</label>
         <textarea id="wf-igangsaetterenRole" style="min-height:70px" placeholder="Hvad gør Igangsætteren specifikt?">${x(w.igangsaetterenRole)}</textarea></div>
     </div>
@@ -1593,8 +1605,8 @@ function readMainForm() {
   });
 }
 
-const WEEK_FIELDS = ['theme','activities','ankeret','ankeretRole','legevogteren','legevogterenRole',
-  'igangsaetteren','igangsaetterenRole','vikar','vikarNote','relNotes','langNote','framingNote','transNote','docNote'];
+const WEEK_FIELDS = ['theme','activities','ankeret','ankeret2','ankeretRole','legevogteren','legevogteren2','legevogterenRole',
+  'igangsaetteren','igangsaetteren2','igangsaetterenRole','vikar','vikarNote','relNotes','langNote','framingNote','transNote','docNote'];
 
 function bindWeekForm(wi) {
   WEEK_FIELDS.forEach(f => {
@@ -1699,9 +1711,9 @@ function printPlan() {
       <div class="pd-week-body">
         <div class="pd-field pd-full"><label>Aktiviteter</label><p>${xh(w.activities)||'–'}</p></div>
         ${grpRows}
-        <div class="pd-field"><label>⚓ Ankeret</label><p>${xh(w.ankeret)||'–'}${w.ankeretRole?'<br><em>'+xh(w.ankeretRole)+'</em>':''}</p></div>
-        <div class="pd-field"><label>🎮 Legevogteren</label><p>${xh(w.legevogteren)||'–'}${w.legevogterenRole?'<br><em>'+xh(w.legevogterenRole)+'</em>':''}</p></div>
-        <div class="pd-field"><label>🚀 Igangsætteren</label><p>${xh(w.igangsaetteren)||'–'}${w.igangsaetterenRole?'<br><em>'+xh(w.igangsaetterenRole)+'</em>':''}</p></div>
+        <div class="pd-field"><label>⚓ Ankeret</label><p>${[w.ankeret,w.ankeret2].filter(Boolean).join(' & ')||'–'}${w.ankeretRole?'<br><em>'+xh(w.ankeretRole)+'</em>':''}</p></div>
+        <div class="pd-field"><label>🎮 Legevogteren</label><p>${[w.legevogteren,w.legevogteren2].filter(Boolean).join(' & ')||'–'}${w.legevogterenRole?'<br><em>'+xh(w.legevogterenRole)+'</em>':''}</p></div>
+        <div class="pd-field"><label>🚀 Igangsætteren</label><p>${[w.igangsaetteren,w.igangsaetteren2].filter(Boolean).join(' & ')||'–'}${w.igangsaetterenRole?'<br><em>'+xh(w.igangsaetterenRole)+'</em>':''}</p></div>
         ${w.vikar?`<div class="pd-field"><label>🔄 Vikar / Backup</label><p>${xh(w.vikar)}${w.vikarNote?' — <em>'+xh(w.vikarNote)+'</em>':''}</p></div>`:''}
 
         <div class="pd-field"><label>Relationel tilgang</label><p>${rel}${w.relNotes?' — '+xh(w.relNotes):''}</p></div>
