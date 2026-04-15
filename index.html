@@ -551,13 +551,18 @@
 <!-- PRINT CONFIRM MODAL -->
 <div id="print-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
   <div style="background:white;border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.25);">
-    <h2 style="color:#104f25;font-size:1.1rem;margin-bottom:.75rem;">🖨️ Udskriv / Gem som PDF</h2>
-    <p style="font-size:.88rem;color:#3d5a44;line-height:1.6;margin-bottom:1.25rem;">
-      Dette dokument kan indeholde oplysninger om børn.<br>
-      Sørg for at opbevare det forsvarligt og slette det når det ikke længere er nødvendigt.
+    <h2 style="color:#104f25;font-size:1.1rem;margin-bottom:.75rem;">🖨️ Gem som PDF</h2>
+    <p style="font-size:.88rem;color:#3d5a44;line-height:1.6;margin-bottom:.9rem;">
+      Dette dokument kan indeholde oplysninger om børn — opbevar det forsvarligt.
     </p>
+    <div style="background:#f0f7ec;border-left:3px solid #104f25;border-radius:0 8px 8px 0;padding:.85rem 1rem;margin-bottom:1.25rem;font-size:.84rem;color:#3d5a44;line-height:1.7;">
+      <strong>Sådan gemmer du som PDF:</strong><br>
+      1. Klik "Åbn printdialog" nedenfor<br>
+      2. Under <em>Destination / Printer</em> — vælg <strong>Gem som PDF</strong><br>
+      3. Klik Gem
+    </div>
     <div style="display:flex;gap:.75rem;">
-      <button onclick="doPrintNow()" style="flex:1;background:#104f25;color:white;border:none;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:700;cursor:pointer;">Udskriv</button>
+      <button onclick="doPrintNow()" style="flex:1;background:#104f25;color:white;border:none;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:700;cursor:pointer;">Åbn printdialog</button>
       <button onclick="document.getElementById('print-modal').style.display='none'" style="flex:1;background:none;border:1.5px solid #a8c9a0;color:#3d5a44;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:600;cursor:pointer;">Annuller</button>
     </div>
   </div>
@@ -1846,7 +1851,7 @@ function doPrintNow() {
     pdEl.style.display='none'; appEl.style.display='flex'; footerEl.style.display='block';
     window.removeEventListener('afterprint',restore);
   });
-  setTimeout(()=>window.print(), 100);
+  window.print();
 }
 
 /* ============================================================
