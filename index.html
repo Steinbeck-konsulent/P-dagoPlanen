@@ -1236,7 +1236,7 @@ function renderWeekContent(wi) {
   </div>` : '';
 
   document.getElementById('week-body').innerHTML = `
-${fpRef || docRef ? `<div style="margin-bottom:1.25rem;">${fpRef}${docRef}</div>` : ''}
+${fpRef ? `<div style="margin-bottom:1.25rem;">${fpRef}</div>` : ''}
 
 <div class="card">
   <div class="card-title"><span class="ci">📌</span> Uge ${wi+1} — Ugens fokus</div>
@@ -1311,12 +1311,6 @@ ${groupSection}
 </div>
 
 
-<div class="card">
-  <div class="card-title"><span class="ci">📝</span> Dokumentation — denne uge</div>
-  ${docRef ? '<p style="font-size:.84rem;color:var(--text-mid);margin-bottom:.75rem;">Se den overordnede dokumentationsplan i referenceboksen øverst.</p>' : ''}
-  <div class="fg"><label>Hvad dokumenterer I specifikt denne uge?</label>
-    <textarea id="wf-docNote" placeholder="Fx fotos fra tirsdagens samling, observationsnotat fra legepladsen...">${x(w.docNote)}</textarea></div>
-</div>
 
 <div class="card">
   <div class="card-title"><span class="ci">📚</span> Læreplanstemerne — uge ${wi+1}</div>
