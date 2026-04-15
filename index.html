@@ -1857,26 +1857,30 @@ function doPrintNow() {
   </div>
 </div>`;
 
+  if (typeof html2pdf === 'undefined') {
+    alert('PDF-biblioteket er ikke indlæst — kontrollér at du er online og genindlæs siden (F5).');
+    return;
+  }
+
   const pdEl = document.getElementById('print-doc');
   pdEl.style.display = 'block';
 
   const filename = (S.plan.title||'PædagoPlanen').replace(/[^a-zA-Z0-9æøåÆØÅ_ -]/g,'') + '.pdf';
   const btn = document.getElementById('pdf-btn');
-  if (btn) { btn.textContent = '⏳ Genererer PDF...'; btn.disabled = true; }
+  if (btn) { btn.innerHTML = '⏳ Genererer PDF...'; btn.disabled = true; }
 
   html2pdf().set({
     margin: [12, 14, 12, 14],
     filename: filename,
     html2canvas: { scale: 2, useCORS: true, logging: false },
     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  }).from(pdEl).output('bloburl').then(url => {
+  }).from(pdEl).save().then(() => {
     pdEl.style.display = 'none';
     if (btn) { btn.innerHTML = '📄 Generer PDF'; btn.disabled = false; }
-    window.open(url, '_blank');
   }).catch(() => {
     pdEl.style.display = 'none';
     if (btn) { btn.innerHTML = '📄 Generer PDF'; btn.disabled = false; }
-    alert('Kunne ikke generere PDF — kontrollér at du er online (kræver internetforbindelse første gang).');
+    alert('Kunne ikke generere PDF — kontrollér at du er online og prøv igen.');
   });
 }
 
