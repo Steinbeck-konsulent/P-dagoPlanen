@@ -548,6 +548,21 @@
 
 <div id="print-doc"></div>
 
+<!-- PRINT CONFIRM MODAL -->
+<div id="print-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;padding:1rem;">
+  <div style="background:white;border-radius:16px;padding:2rem;max-width:420px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.25);">
+    <h2 style="color:#104f25;font-size:1.1rem;margin-bottom:.75rem;">🖨️ Udskriv / Gem som PDF</h2>
+    <p style="font-size:.88rem;color:#3d5a44;line-height:1.6;margin-bottom:1.25rem;">
+      Dette dokument kan indeholde oplysninger om børn.<br>
+      Sørg for at opbevare det forsvarligt og slette det når det ikke længere er nødvendigt.
+    </p>
+    <div style="display:flex;gap:.75rem;">
+      <button onclick="doPrintNow()" style="flex:1;background:#104f25;color:white;border:none;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:700;cursor:pointer;">Udskriv</button>
+      <button onclick="document.getElementById('print-modal').style.display='none'" style="flex:1;background:none;border:1.5px solid #a8c9a0;color:#3d5a44;padding:.75rem;border-radius:50px;font-size:.9rem;font-weight:600;cursor:pointer;">Annuller</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── JAVASCRIPT ────────────────────────────────────────────── -->
 <script>
 /* ============================================================
@@ -1265,8 +1280,9 @@ ${fpRef || inspRef || docRef ? `<div style="margin-bottom:1.25rem;">${fpRef}${in
   <div class="card-title"><span class="ci">📌</span> Uge ${wi+1} — Ugens fokus</div>
   <div class="fg"><label>Ugens tema / fokus</label>
     <input type="text" id="wf-theme" placeholder="f.eks. Lytter vi til hinanden?" value="${x(w.theme)}"></div>
-  <div class="fg"><label>Planlagte aktiviteter <span class="lh">— beskriv de konkrete aktiviteter denne uge</span></label>
-    <textarea id="wf-activities" placeholder="Hvad sker der, hvornår, hvor og med hvem?">${x(w.activities)}</textarea></div>
+  <div class="alert a-info" style="margin-top:.25rem;">
+    📅 <strong>Husk:</strong> Planlagte aktiviteter skal deles med dagtilbudsleder og kolleger <strong>senest fredag kl. 12</strong>.
+  </div>
 </div>
 
 ${groupSection}
@@ -1695,7 +1711,13 @@ function importJSON(evt) {
    PRINT / PDF
    ============================================================ */
 function printPlan() {
-  if (!confirm('⚠️ GDPR-advarsel\n\nDen udskrevne/gemte PDF kan indeholde oplysninger om børn.\n\nSørg for at:\n• Opbevare dokumentet forsvarligt\n• Ikke efterlade fysiske udskrifter tilgængeligt\n• Slette PDF-filen når den ikke længere er nødvendig\n\nFortsæt med udskrivning?')) return;
+  const modal = document.getElementById('print-modal');
+  modal.style.display = 'flex';
+  modal.onclick = e => { if (e.target === modal) modal.style.display = 'none'; };
+}
+
+function doPrintNow() {
+  document.getElementById('print-modal').style.display = 'none';
   flushStep();
   const m=S.meta, p=S.plan, ev=S.eval, mt=S.midterm, fp=S.focusPoint;
   const eduNames = m.personnel.filter(p=>p.name).map(p=>`${x(p.name)} (${x(p.role)})`).join(', ') || '–';
